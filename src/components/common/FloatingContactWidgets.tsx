@@ -57,7 +57,7 @@ export const FloatingContactWidgets: React.FC = () => {
     {
       id: 'facebook' as const,
       name: 'Facebook',
-      tooltip: 'Fanpage 2HT',
+      tooltip: ' 2HT By Web',
       color: 'bg-[#1877F2] hover:bg-[#166fe5] shadow-[#1877F2]/30 hover:shadow-[#1877F2]/50',
       ringColor: 'ring-[#1877F2]/30',
       icon: (
