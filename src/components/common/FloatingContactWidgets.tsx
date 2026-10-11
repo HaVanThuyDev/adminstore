@@ -11,7 +11,7 @@ export const FloatingContactWidgets: React.FC = () => {
   const cleanPhone = hotline.replace(/\D/g, '');
   const facebookUrl = settings.socialLinks?.facebook || 'https://www.facebook.com/profile.php?id=61578990656353';
   // Standard Messenger URL
-  const messengerUrl = `https://www.facebook.com/havanthuy2003`;
+  const messengerUrl = `https://m.me/havanthuy2003`;
   // Standard Zalo URL
   const zaloUrl = `https://zalo.me/${cleanPhone}`;
 
@@ -69,8 +69,8 @@ export const FloatingContactWidgets: React.FC = () => {
         window.open(facebookUrl, '_blank', 'noopener,noreferrer');
       },
       showInfo: true,
-      description: 'Ghé thăm Fanpage chính thức của 2HT Technology để cập nhật sản phẩm & ưu đãi mới nhất.',
-      linkText: 'Truy cập Fanpage 2HT',
+      description: 'Ghé thăm Fanpage chính thức của  2HT By Web để cập nhật sản phẩm & ưu đãi mới nhất.',
+      linkText: 'Truy cập Fanpage 2HT By Web',
       linkUrl: facebookUrl,
     },
   ];
