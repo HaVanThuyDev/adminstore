@@ -9,7 +9,7 @@ export const FloatingContactWidgets: React.FC = () => {
 
   const hotline = settings.hotline || '0383717785';
   const cleanPhone = hotline.replace(/\D/g, '');
-  const facebookUrl = settings.socialLinks?.facebook || 'https://facebook.com';
+  const facebookUrl = settings.socialLinks?.facebook || 'https://www.facebook.com/profile.php?id=61578990656353';
   // Standard Messenger URL
   const messengerUrl = `https://www.facebook.com/havanthuy2003`;
   // Standard Zalo URL
