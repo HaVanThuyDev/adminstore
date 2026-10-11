@@ -11,7 +11,7 @@ export const FloatingContactWidgets: React.FC = () => {
   const cleanPhone = hotline.replace(/\D/g, '');
   const facebookUrl = settings.socialLinks?.facebook || 'https://facebook.com';
   // Standard Messenger URL
-  const messengerUrl = `https://m.me/2ht.technology`;
+  const messengerUrl = `https://www.facebook.com/havanthuy2003`;
   // Standard Zalo URL
   const zaloUrl = `https://zalo.me/${cleanPhone}`;
 
