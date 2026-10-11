@@ -169,16 +169,14 @@ export const ProductDetailPage: React.FC = () => {
         </div>
 
         {/* Right: Interactive Mockup Box */}
-        <div className="lg:col-span-5 space-y-4 w-full">
-          <div className="rounded-2xl bg-[#F8FAFC] border border-slate-200 p-3.5 sm:p-5 md:p-6 shadow-2xl relative">
-            <div className="flex flex-wrap items-center justify-between gap-2 pb-3 mb-3 border-b border-slate-200">
+        <div className="lg:col-span-5 space-y-4">
+          <div className="rounded-2xl bg-[#F8FAFC] border border-slate-200 p-6 shadow-2xl relative">
+            <div className="flex items-center justify-between pb-4 mb-4 border-b border-slate-200">
               <span className="text-xs font-mono text-slate-500 flex items-center gap-1.5">
                 <span className="w-2 h-2 rounded-full bg-emerald-400 inline-block animate-pulse" />
-                Mô phỏng Giao diện Đa thiết bị
+                Live UI Simulation
               </span>
-              <span className="text-[11px] text-cyan-600 font-semibold bg-cyan-50 px-2 py-0.5 rounded border border-cyan-200">
-                Web • iPad • Mobile
-              </span>
+              <span className="text-xs text-cyan-400 font-semibold">2HT Production Engine</span>
             </div>
 
             <SoftwarePreviewCard
