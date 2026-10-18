@@ -638,11 +638,7 @@ export const HomePage: React.FC = () => {
       {/* 8. WORKING PROCESS SECTION */}
       <section className="relative bg-slate-50/70 py-20 border-y border-slate-200/80">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <SectionHeading
-            eyebrow="Quy trình 6 bước chuẩn mực"
-            title="Quy trình làm việc chuyên nghiệp."
-            description="Phương pháp phát triển phần mềm chuẩn Agile/Scrum đảm bảo tiến độ, chất lượng và sự minh bạch tuyệt đối."
-          />
+        
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {steps.map((s) => (
