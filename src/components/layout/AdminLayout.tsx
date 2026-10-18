@@ -14,7 +14,9 @@ import {
   ChevronRight,
   ShieldCheck,
   FileText,
-  FileSignature
+  FileSignature,
+  Type,
+  Newspaper
 } from 'lucide-react';
 
 export const AdminLayout: React.FC = () => {
@@ -26,6 +28,8 @@ export const AdminLayout: React.FC = () => {
   const navItems = [
     { label: 'Tổng quan (Dashboard)', href: '/admin', icon: LayoutDashboard },
     { label: 'Quản lý sản phẩm', href: '/admin/products', icon: Package },
+    { label: 'Quản lý bài viết', href: '/admin/blogs', icon: Newspaper },
+    { label: 'Quản lý tiêu đề', href: '/admin/headings', icon: Type },
     { label: 'Quản lý đơn hàng demo', href: '/admin/orders', icon: ShoppingBag },
     { label: 'Quản lý Hóa đơn VAT', href: '/admin/invoices', icon: FileText },
     { label: 'Hợp đồng điện tử', href: '/admin/contracts', icon: FileSignature },

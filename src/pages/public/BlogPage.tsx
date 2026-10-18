@@ -1,15 +1,23 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { initialBlogs } from '../../data/initialBlogs';
+import { blogService } from '../../services/blogService';
+import { BlogPost } from '../../types/blog';
 import { SectionHeading } from '../../components/common/SectionHeading';
 import { Clock, ArrowRight, ChevronRight, Search } from 'lucide-react';
 
 export const BlogPage: React.FC = () => {
   const navigate = useNavigate();
+  const [blogs, setBlogs] = useState<BlogPost[]>(() => blogService.getAll());
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedTag, setSelectedTag] = useState('all');
 
-  const filtered = initialBlogs.filter((b) => {
+  useEffect(() => {
+    const handleStorage = () => setBlogs(blogService.getAll());
+    window.addEventListener('storage', handleStorage);
+    return () => window.removeEventListener('storage', handleStorage);
+  }, []);
+
+  const filtered = blogs.filter((b) => {
     if (selectedTag !== 'all' && !b.tags.includes(selectedTag)) return false;
     if (searchTerm.trim()) {
       const q = searchTerm.toLowerCase();

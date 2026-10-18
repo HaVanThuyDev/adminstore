@@ -37,6 +37,8 @@ const AdminBlogsPage = lazy(() => import('../pages/admin/AdminBlogsPage').then(m
 const AdminSettingsPage = lazy(() => import('../pages/admin/AdminSettingsPage').then(m => ({ default: m.AdminSettingsPage })));
 const AdminInvoicesPage = lazy(() => import('../pages/admin/AdminInvoicesPage').then(m => ({ default: m.AdminInvoicesPage })));
 const AdminContractsPage = lazy(() => import('../pages/admin/AdminContractsPage').then(m => ({ default: m.AdminContractsPage })));
+const AdminPostsPage = lazy(() => import('../pages/admin/AdminPostsPage').then(m => ({ default: m.AdminPostsPage })));
+const AdminHeadingsPage = lazy(() => import('../pages/admin/AdminHeadingsPage').then(m => ({ default: m.AdminHeadingsPage })));
 
 const withSuspense = (Component: React.ComponentType) => (
   <Suspense fallback={<PageLoader />}>
@@ -90,7 +92,8 @@ export const router = createBrowserRouter([
       { path: 'contracts', element: withSuspense(AdminContractsPage) },
       { path: 'customers', element: withSuspense(AdminCustomersPage) },
       { path: 'consultations', element: withSuspense(AdminConsultationsPage) },
-      { path: 'blogs', element: withSuspense(AdminBlogsPage) },
+      { path: 'blogs', element: withSuspense(AdminPostsPage) },
+      { path: 'headings', element: withSuspense(AdminHeadingsPage) },
       { path: 'settings', element: withSuspense(AdminSettingsPage) },
     ],
   },

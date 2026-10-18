@@ -2,8 +2,9 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { productService } from '../../services/productService';
+import { blogService } from '../../services/blogService';
+import { headingService } from '../../services/headingService';
 import { initialProjects } from '../../data/initialProjects';
-import { initialBlogs } from '../../data/initialBlogs';
 import { useSettings } from '../../store/settingsContext';
 import { useCart } from '../../store/cartContext';
 import { Button } from '../../components/common/Button';
@@ -713,7 +714,7 @@ export const HomePage: React.FC = () => {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {initialBlogs.map((b) => (
+            {blogService.getAll().slice(0, 3).map((b) => (
               <div
                 key={b.id}
                 onClick={() => navigate(`/blog/${b.slug}`)}

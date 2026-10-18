@@ -50,4 +50,5 @@ export const STORAGE_KEYS = {
   AUTH: '2ht_demo_user_auth_v1',
   PROJECTS: '2ht_projects_data_v1',
   BLOGS: '2ht_blogs_data_v1',
+  HEADINGS: '2ht_headings_data_v1',
 };

@@ -1,6 +1,6 @@
 import React from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import { initialBlogs } from '../../data/initialBlogs';
+import { blogService } from '../../services/blogService';
 import { Button } from '../../components/common/Button';
 import { ChevronRight, Clock, Calendar, ArrowLeft, Share2 } from 'lucide-react';
 import { toast } from 'sonner';
@@ -9,7 +9,7 @@ export const BlogDetailPage: React.FC = () => {
   const { slug } = useParams<{ slug: string }>();
   const navigate = useNavigate();
 
-  const blog = initialBlogs.find((b) => b.slug === slug);
+  const blog = slug ? blogService.getBySlug(slug) : undefined;
 
   if (!blog) {
     return (
