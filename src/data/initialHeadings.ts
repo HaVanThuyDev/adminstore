@@ -34,7 +34,7 @@ export const initialHeadings: SiteHeading[] = [
     key: 'home_hero_description',
     section: 'Hero Banner',
     label: 'Mô tả Hero Banner',
-    value: 'Khám phá hệ sinh thái phần mềm do 2HT tự phát triển, giúp doanh nghiệp vận hành thông minh hơn, tối ưu quy trình và tăng tốc chuyển đổi số.',
+    value: 'Khám phá hệ sinh thái phần mềm do chúng tôi phát triển, giúp doanh nghiệp vận hành thông minh hơn, tối ưu quy trình và tăng tốc chuyển đổi số.',
     type: 'description',
     page: 'Trang chủ',
   },
