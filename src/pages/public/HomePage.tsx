@@ -36,7 +36,8 @@ import {
   Clock,
   Quote,
   Eye,
-  ShoppingBag
+  ShoppingBag,
+  Users
 } from 'lucide-react';
 
 export const HomePage: React.FC = () => {
@@ -204,7 +205,7 @@ export const HomePage: React.FC = () => {
                   size="lg"
                   variant="secondary"
                   onClick={() => navigate('/contact')}
-                  icon={<Sparkles className="w-4 h-4 text-cyan-400" />}
+                  icon={<Users className="w-4 h-4 text-cyan-400" />}
                 >
                   Trao đổi với chuyên gia
                 </Button>
@@ -741,7 +742,7 @@ export const HomePage: React.FC = () => {
 
             <div className="relative z-10 max-w-2xl mx-auto space-y-6">
               <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/20 text-xs font-bold text-white uppercase tracking-wider backdrop-blur-sm">
-                <Sparkles className="w-3.5 h-3.5 text-cyan-200" /> Bắt đầu dự án cùng chúng tôi
+                <Sparkles className="" /> Bắt đầu dự án cùng chúng tôi
               </span>
 
               <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-white leading-tight">
