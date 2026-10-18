@@ -175,8 +175,7 @@ export const HomePage: React.FC = () => {
             >
               {/* Eyebrow */}
               <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-primary/10 border border-primary/30 text-xs font-bold text-accent tracking-widest uppercase">
-                <Sparkles className="w-3.5 h-3.5 text-accent animate-pulse" />
-                <span>2HT INFORMATION TECHNOLOGY</span>
+              
               </div>
 
               {/* Main Headline */}
@@ -323,11 +322,7 @@ export const HomePage: React.FC = () => {
       {/* 3. FEATURED PRODUCTS SECTION */}
       <section className="relative">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <SectionHeading
-            eyebrow="Hệ sinh thái phần mềm "
-            title="Khám phá hệ sinh thái sản phẩm."
-            description="Những giải pháp phần mềm được nghiên cứu và phát triển để giải quyết bài toán thực tế của doanh nghiệp hiện đại."
-          />
+        
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
             {products.map((product, index) => (
@@ -443,11 +438,7 @@ export const HomePage: React.FC = () => {
       {/* 4. PRODUCT CATEGORIES SECTION */}
       <section className="relative bg-slate-50/70 py-16 border-y border-slate-200/80">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <SectionHeading
-            eyebrow="Danh mục giải pháp"
-            title="Lựa chọn lĩnh vực bạn quan tâm."
-            description="Tập trung nguồn lực vào bài toán chuyển đổi số cụ thể cho từng mô hình doanh nghiệp."
-          />
+          
 
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
             {categories.map((cat) => {
@@ -546,11 +537,7 @@ export const HomePage: React.FC = () => {
       {/* 6. TECHNOLOGY STACK SECTION */}
       <section className="relative bg-slate-50/70 py-20 border-y border-slate-200/80">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <SectionHeading
-            eyebrow="Công nghệ & Hạ tầng"
-            title="Ngăn xếp công nghệ hàng đầu thế giới."
-            description="2HT áp dụng các ngôn ngữ, framework và công nghệ điện toán đám mây tiên tiến nhất để đảm bảo độ bền vững cho sản phẩm."
-          />
+        
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {techCategories.map((group, i) => {
@@ -588,11 +575,7 @@ export const HomePage: React.FC = () => {
       {/* 7. PROJECTS SHOWCASE SECTION */}
       <section className="relative">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <SectionHeading
-            eyebrow="Portfolio & Case Studies"
-            title="Dự án tiêu biểu đã triển khai."
-            description="Minh chứng thực tế cho năng lực công nghệ và hiệu quả chuyển đổi số của 2HT."
-          />
+          
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {initialProjects.map((project) => (
@@ -660,12 +643,6 @@ export const HomePage: React.FC = () => {
       {/* 9. TESTIMONIALS (Transparent Demo Notice) */}
       <section className="relative">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <SectionHeading
-            eyebrow="Đánh giá minh họa"
-            title="Khách hàng nói gì về giải pháp ?"
-            description="Nội dung đánh giá mô phỏng theo khảo sát thực nghiệm nghiệp vụ."
-          />
-
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {demoTestimonials.map((t, i) => (
               <div
