@@ -48,7 +48,7 @@ export const AdminLayout: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 flex text-slate-800 font-sans">
+    <div className="h-screen overflow-hidden bg-slate-50 flex text-slate-800 font-sans">
       {/* Mobile Backdrop */}
       {sidebarOpen && (
         <div
@@ -59,7 +59,7 @@ export const AdminLayout: React.FC = () => {
 
       {/* Admin Sidebar */}
       <aside
-        className={`fixed inset-y-0 left-0 z-50 w-64 bg-white border-r border-slate-200 transform transition-transform duration-200 ease-in-out lg:translate-x-0 lg:static lg:inset-auto flex flex-col shadow-2xl ${
+        className={`fixed inset-y-0 left-0 z-50 w-64 bg-white border-r border-slate-200 transform transition-transform duration-200 ease-in-out lg:translate-x-0 lg:sticky lg:top-0 lg:h-screen flex flex-col shadow-2xl lg:shadow-none flex-shrink-0 ${
           sidebarOpen ? 'translate-x-0' : '-translate-x-1/2 -left-32 lg:left-0 hidden lg:flex'
         }`}
       >
