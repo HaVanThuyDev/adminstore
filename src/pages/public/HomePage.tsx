@@ -174,10 +174,7 @@ export const HomePage: React.FC = () => {
               className="lg:col-span-6 xl:col-span-6 space-y-6 sm:space-y-7"
             >
               {/* Eyebrow */}
-              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-primary/10 border border-primary/30 text-xs font-bold text-accent tracking-widest uppercase">
-              
-              </div>
-
+            
               {/* Main Headline */}
               <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-[44px] xl:text-[52px] font-black tracking-tight text-slate-900 leading-[1.2]">
                 <span className="block">Kiến tạo giải pháp số.</span>
