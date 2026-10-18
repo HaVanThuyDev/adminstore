@@ -186,7 +186,7 @@ export const HomePage: React.FC = () => {
 
               {/* Description */}
               <p className="text-base sm:text-lg text-slate-600 leading-relaxed max-w-2xl">
-                Khám phá hệ sinh thái phần mềm do <strong className="text-slate-900">2HT</strong> tự phát triển, giúp doanh nghiệp vận hành thông minh hơn, tối ưu quy trình và tăng tốc chuyển đổi số.
+                Khám phá hệ sinh thái phần mềm do chúng tôi phát triển, giúp doanh nghiệp vận hành thông minh hơn, tối ưu quy trình và tăng tốc chuyển đổi số.
               </p>
 
               {/* CTAs */}
@@ -741,8 +741,8 @@ export const HomePage: React.FC = () => {
             <div className="absolute bottom-0 left-0 w-72 h-72 bg-blue-900/20 rounded-full blur-3xl pointer-events-none" />
 
             <div className="relative z-10 max-w-2xl mx-auto space-y-6">
-              <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/20 text-xs font-bold text-white uppercase tracking-wider backdrop-blur-sm">
-                <Sparkles className="" /> Bắt đầu dự án cùng chúng tôi
+              <span className="inline-flex items-center px-3 py-1 rounded-full bg-white/20 text-xs font-bold text-white uppercase tracking-wider backdrop-blur-sm">
+                Bắt đầu dự án cùng chúng tôi
               </span>
 
               <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-white leading-tight">
