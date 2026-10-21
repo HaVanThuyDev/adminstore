@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
+import { Outlet, Link, useLocation, useNavigate, Navigate } from 'react-router-dom';
 import { useAuth } from '../../store/authContext';
 import { 
   LayoutDashboard, 
@@ -24,6 +24,11 @@ export const AdminLayout: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { user, logout } = useAuth();
+
+  // BẢO VỆ ROUTE ADMIN: Nếu chưa đăng nhập hoặc không phải admin thì chặn truy cập
+  if (!user || user.role !== 'admin') {
+    return <Navigate to="/admin/login" state={{ from: location }} replace />;
+  }
 
   const navItems = [
     { label: 'Tổng quan (Dashboard)', href: '/admin', icon: LayoutDashboard },

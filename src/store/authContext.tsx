@@ -41,7 +41,15 @@ const DEFAULT_DEMO_USER: UserProfile = {
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<UserProfile | null>(() => {
-    return storage.get<UserProfile | null>(STORAGE_KEYS.AUTH, DEFAULT_DEMO_USER);
+    const saved = storage.get<UserProfile | null>(STORAGE_KEYS.AUTH, null);
+    const token = apiClient.getToken();
+    // Xóa session ảo cũ nếu không có token JWT thực tế
+    if (saved && (!token || saved.id === 'usr-demo-01')) {
+      storage.remove(STORAGE_KEYS.AUTH);
+      apiClient.removeToken();
+      return null;
+    }
+    return saved;
   });
 
   useEffect(() => {
@@ -49,35 +57,48 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, [user]);
 
   const login = async (email: string, password?: string): Promise<boolean> => {
-    try {
-      if (password) {
-        const res = await apiClient.post<{ token: string; user: any }>('/auth/login', {
-          email: email.trim(),
-          password,
-        });
-        if (res && res.token) {
-          apiClient.setToken(res.token);
-          const u = res.user;
-          const profile: UserProfile = {
-            id: u.id,
-            fullName: u.fullName || 'Quản Trị Viên 2HT',
-            email: u.email,
-            phone: u.phone || '0383717785',
-            company: '2HT Information Technology',
-            role: (u.role === 'SUPER_ADMIN' || u.role === 'ADMIN') ? 'admin' : 'user',
-            avatar: u.avatarUrl || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80',
-            joinedDate: new Date().toISOString().split('T')[0],
-          };
-          setUser(profile);
-          toast.success('Đăng nhập Backend MySQL thành công!');
-          return true;
-        }
-      }
-    } catch (e: any) {
-      console.warn('Backend login error, falling back to demo mode:', e.message);
+    if (!password) {
+      throw new Error('Vui lòng nhập mật khẩu tài khoản');
     }
-    // Fallback if backend offline or demo user
-    return loginDemo(email, email.includes('admin') ? 'admin' : 'user');
+
+    try {
+      const res = await apiClient.post<{ token: string; user: any }>('/auth/login', {
+        email: email.trim(),
+        password,
+      });
+
+      if (!res || !res.token) {
+        throw new Error('Không nhận được mã xác thực từ hệ thống');
+      }
+
+      const u = res.user;
+      const isAdminRole = u.role === 'SUPER_ADMIN' || u.role === 'ADMIN';
+
+      if (!isAdminRole) {
+        throw new Error('Tài khoản của bạn không có quyền truy cập trang quản trị');
+      }
+
+      apiClient.setToken(res.token);
+
+      const profile: UserProfile = {
+        id: u.id,
+        fullName: u.fullName || 'Quản Trị Viên 2HT',
+        email: u.email,
+        phone: u.phone || '0383717785',
+        company: '2HT Information Technology',
+        role: 'admin',
+        avatar: u.avatarUrl || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80',
+        joinedDate: new Date().toISOString().split('T')[0],
+      };
+
+      setUser(profile);
+      return true;
+    } catch (e: any) {
+      // Clear any invalid user/token
+      apiClient.removeToken();
+      setUser(null);
+      throw new Error(e.message || 'Tài khoản hoặc mật khẩu không chính xác');
+    }
   };
 
   const loginDemo = (email: string, role: 'user' | 'admin' = 'user') => {
