@@ -43,7 +43,7 @@ export const ContactPage: React.FC = () => {
     return Object.keys(errs).length === 0;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!validate()) {
       toast.error('Vui lòng kiểm tra lại các trường thông tin');
@@ -52,8 +52,8 @@ export const ContactPage: React.FC = () => {
 
     setIsSubmitting(true);
 
-    setTimeout(() => {
-      const created = consultationService.create({
+    try {
+      const created = await consultationService.create({
         fullName,
         email,
         phone,
@@ -63,10 +63,9 @@ export const ContactPage: React.FC = () => {
         message,
       });
 
-      setIsSubmitting(false);
       setSubmittedId(created.id);
       toast.success('Gửi yêu cầu tư vấn thành công!', {
-        description: `Mã tiếp nhận: ${created.id}. Dữ liệu đã lưu vào localStorage.`,
+        description: `Mã tiếp nhận: ${created.id}. Dữ liệu đã được gửi tới hệ thống 2HT.`,
       });
 
       // Clear form
@@ -75,7 +74,11 @@ export const ContactPage: React.FC = () => {
       setPhone('');
       setCompany('');
       setMessage('');
-    }, 600);
+    } catch (err: any) {
+      toast.error('Lỗi khi gửi yêu cầu', { description: err.message });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (

@@ -5,7 +5,7 @@ import { toast } from 'sonner';
 
 interface SettingsContextType {
   settings: SiteSettings;
-  updateSettings: (newSettings: Partial<SiteSettings>) => void;
+  updateSettings: (newSettings: Partial<SiteSettings>) => Promise<void>;
   resetSettings: () => void;
 }
 
@@ -16,8 +16,17 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     return settingsService.get();
   });
 
-  const updateSettings = (newSettings: Partial<SiteSettings>) => {
-    const updated = settingsService.update(newSettings);
+  useEffect(() => {
+    // Fetch live settings from MySQL Backend API
+    settingsService.fetch().then((liveData) => {
+      if (liveData && liveData.brandName) {
+        setSettings(liveData);
+      }
+    });
+  }, []);
+
+  const updateSettings = async (newSettings: Partial<SiteSettings>) => {
+    const updated = await settingsService.update(newSettings);
     setSettings(updated);
     toast.success('Đã lưu cấu hình hệ thống thành công');
   };

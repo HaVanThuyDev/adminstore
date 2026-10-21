@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { headingService } from '../../services/headingService';
 import { SiteHeading } from '../../types/heading';
 import { Button } from '../../components/common/Button';
@@ -36,9 +36,14 @@ export const AdminHeadingsPage: React.FC = () => {
   const [type, setType] = useState<SiteHeading['type']>('heading');
   const [page, setPage] = useState('Trang chủ');
 
-  const refreshList = () => {
-    setHeadings(headingService.getAll());
+  const refreshList = async () => {
+    const list = await headingService.fetchAll();
+    setHeadings(list);
   };
+
+  useEffect(() => {
+    refreshList();
+  }, []);
 
   // Get unique pages for filter
   const uniquePages = Array.from(new Set(headings.map((h) => h.page)));
@@ -65,7 +70,7 @@ export const AdminHeadingsPage: React.FC = () => {
     setIsModalOpen(true);
   };
 
-  const handleSaveHeading = (e: React.FormEvent) => {
+  const handleSaveHeading = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!key.trim() || !value.trim()) {
       toast.error('Vui lòng nhập đầy đủ Key và Nội dung tiêu đề');
@@ -82,7 +87,7 @@ export const AdminHeadingsPage: React.FC = () => {
         type,
         page,
       };
-      headingService.save(updated);
+      await headingService.save(updated);
       toast.success('Đã cập nhật tiêu đề thành công');
     } else {
       const newHeading: SiteHeading = {
@@ -94,28 +99,28 @@ export const AdminHeadingsPage: React.FC = () => {
         type,
         page,
       };
-      headingService.save(newHeading);
+      await headingService.save(newHeading);
       toast.success('Đã thêm tiêu đề mới thành công');
     }
 
     setIsModalOpen(false);
-    refreshList();
+    await refreshList();
   };
 
-  const handleInlineSave = (id: string) => {
+  const handleInlineSave = async (id: string) => {
     if (inlineValue.trim()) {
-      headingService.updateValue(id, inlineValue);
+      await headingService.updateValue(id, inlineValue);
       toast.success('Đã cập nhật nội dung tiêu đề');
-      refreshList();
+      await refreshList();
     }
     setEditingInlineId(null);
   };
 
-  const handleDelete = (id: string, headingLabel: string) => {
+  const handleDelete = async (id: string, headingLabel: string) => {
     if (window.confirm(`Bạn có chắc chắn muốn xóa tiêu đề "${headingLabel}"?`)) {
-      headingService.delete(id);
+      await headingService.delete(id);
       toast.info(`Đã xóa tiêu đề "${headingLabel}"`);
-      refreshList();
+      await refreshList();
     }
   };
 

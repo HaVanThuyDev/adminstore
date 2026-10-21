@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { productService } from '../../services/productService';
@@ -16,6 +16,7 @@ import { EcosystemHeroVisual } from '../../components/mockups/EcosystemHeroVisua
 import { SoftwarePreviewCard } from '../../components/mockups/SoftwarePreviewCard';
 import { LiveProductDemoModal } from '../../components/mockups/LiveProductDemoModal';
 import { Product } from '../../types/product';
+import { BlogPost } from '../../types/blog';
 import { 
   ArrowRight, 
   Sparkles, 
@@ -44,7 +45,23 @@ export const HomePage: React.FC = () => {
   const { settings } = useSettings();
   const { addToCart } = useCart();
   const navigate = useNavigate();
-  const products = productService.getPublished().slice(0, 6);
+  const [products, setProducts] = useState<Product[]>(() => productService.getPublished().slice(0, 6));
+  const [latestBlogs, setLatestBlogs] = useState<BlogPost[]>(() => blogService.getAll().slice(0, 3));
+
+  useEffect(() => {
+    // Fetch live products and blogs from MySQL Backend API
+    productService.fetchAll().then((all) => {
+      if (Array.isArray(all) && all.length > 0) {
+        setProducts(all.filter((p) => p.isPublished).slice(0, 6));
+      }
+    });
+
+    blogService.fetchAll().then((blogs) => {
+      if (Array.isArray(blogs) && blogs.length > 0) {
+        setLatestBlogs(blogs.slice(0, 3));
+      }
+    });
+  }, []);
 
   const [selectedDemoProduct, setSelectedDemoProduct] = useState<Product | null>(null);
 
@@ -685,7 +702,7 @@ export const HomePage: React.FC = () => {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {blogService.getAll().slice(0, 3).map((b) => (
+            {latestBlogs.map((b) => (
               <div
                 key={b.id}
                 onClick={() => navigate(`/blog/${b.slug}`)}

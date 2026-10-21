@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { blogService } from '../../services/blogService';
+import { BlogPost } from '../../types/blog';
 import { Button } from '../../components/common/Button';
 import { ChevronRight, Clock, Calendar, ArrowLeft, Share2 } from 'lucide-react';
 import { toast } from 'sonner';
@@ -9,7 +10,15 @@ export const BlogDetailPage: React.FC = () => {
   const { slug } = useParams<{ slug: string }>();
   const navigate = useNavigate();
 
-  const blog = slug ? blogService.getBySlug(slug) : undefined;
+  const [blog, setBlog] = useState<BlogPost | undefined>(() => (slug ? blogService.getBySlug(slug) : undefined));
+
+  useEffect(() => {
+    if (!slug) return;
+    blogService.fetchAll().then((list) => {
+      const found = list.find((b) => b.slug === slug);
+      if (found) setBlog(found);
+    });
+  }, [slug]);
 
   if (!blog) {
     return (

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { consultationService } from '../../services/consultationService';
 import { ConsultationRequest, ConsultationStatus } from '../../types/consultation';
 import { Button } from '../../components/common/Button';
@@ -15,9 +15,14 @@ export const AdminConsultationsPage: React.FC = () => {
   const [assignedStaff, setAssignedStaff] = useState('');
   const [notes, setNotes] = useState('');
 
-  const refreshList = () => {
-    setConsultations(consultationService.getAll());
+  const refreshList = async () => {
+    const list = await consultationService.fetchAll();
+    setConsultations(list);
   };
+
+  useEffect(() => {
+    refreshList();
+  }, []);
 
   const handleUpdateStatus = (id: string, newStatus: ConsultationStatus) => {
     consultationService.updateStatus(id, newStatus, assignedStaff || undefined, notes || undefined);

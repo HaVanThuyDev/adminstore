@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useSearchParams, useNavigate, Link } from 'react-router-dom';
 import { productService } from '../../services/productService';
 import { Product, ProductCategory } from '../../types/product';
@@ -30,7 +30,15 @@ export const ProductsPage: React.FC = () => {
 
   const [selectedDemoProduct, setSelectedDemoProduct] = useState<Product | null>(null);
 
-  const allProducts = productService.getPublished();
+  const [allProducts, setAllProducts] = useState<Product[]>(() => productService.getPublished());
+
+  useEffect(() => {
+    productService.fetchAll().then((products) => {
+      if (Array.isArray(products) && products.length > 0) {
+        setAllProducts(products.filter((p) => p.isPublished));
+      }
+    });
+  }, []);
 
   const categories = [
     { id: 'all', name: 'Tất cả giải pháp' },

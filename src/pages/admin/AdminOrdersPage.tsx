@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { orderService } from '../../services/orderService';
 import { productService } from '../../services/productService';
 import { DemoOrder, OrderStatus } from '../../types/order';
@@ -60,10 +60,15 @@ export const AdminOrdersPage: React.FC = () => {
     status: 'DEMO_PENDING' as OrderStatus,
   });
 
-  const refreshOrders = () => {
-    setOrders(orderService.getAll());
+  const refreshOrders = async () => {
+    const list = await orderService.fetchAll();
+    setOrders(list);
     setSelectedIds([]);
   };
+
+  useEffect(() => {
+    refreshOrders();
+  }, []);
 
   // Status badge renderer
   const getStatusBadge = (status: OrderStatus) => {

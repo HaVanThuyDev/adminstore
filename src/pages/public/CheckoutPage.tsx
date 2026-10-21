@@ -54,7 +54,7 @@ export const CheckoutPage: React.FC = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!validate()) {
       toast.error('Vui lòng điền đầy đủ các thông tin bắt buộc.');
@@ -63,8 +63,8 @@ export const CheckoutPage: React.FC = () => {
 
     setIsSubmitting(true);
 
-    setTimeout(() => {
-      const createdOrder = orderService.createOrder({
+    try {
+      const createdOrder = await orderService.createOrder({
         customer: {
           fullName,
           email,
@@ -83,12 +83,15 @@ export const CheckoutPage: React.FC = () => {
       });
 
       clearCart();
-      setIsSubmitting(false);
-      toast.success('Đặt hàng Demo thành công!', {
+      toast.success('Đặt hàng thành công!', {
         description: `Mã đơn hàng: ${createdOrder.id}`,
       });
       navigate(`/order-success/${createdOrder.id}`);
-    }, 800);
+    } catch (err: any) {
+      toast.error('Lỗi khi tạo đơn hàng', { description: err.message });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (

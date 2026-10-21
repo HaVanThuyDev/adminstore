@@ -7,15 +7,15 @@ import { motion } from 'framer-motion';
 import isometricLaptopImg from '../../assets/isometric-laptop-transparent.png';
 
 export const AdminLoginPage: React.FC = () => {
-  const { loginDemo } = useAuth();
+  const { login } = useAuth();
   const navigate = useNavigate();
 
-  const [username, setUsername] = useState('admin@2ht-tech.demo.vn');
-  const [password, setPassword] = useState('admin@secure2026');
+  const [username, setUsername] = useState('admin@2ht.vn');
+  const [password, setPassword] = useState('Password@2026');
   const [rememberMe, setRememberMe] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleAdminLogin = (e: React.FormEvent) => {
+  const handleAdminLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!username.trim()) {
       toast.error('Vui lòng nhập tên tài khoản quản trị');
@@ -23,11 +23,17 @@ export const AdminLoginPage: React.FC = () => {
     }
 
     setIsLoading(true);
-    setTimeout(() => {
-      loginDemo(username, 'admin');
-      toast.success('Xác thực Ban Quản Lý thành công. Chào mừng bạn trở lại!');
-      navigate('/admin');
-    }, 400);
+    try {
+      const ok = await login(username, password);
+      if (ok) {
+        toast.success('Xác thực Ban Quản Lý thành công. Chào mừng bạn trở lại!');
+        navigate('/admin');
+      }
+    } catch (err: any) {
+      toast.error('Đăng nhập thất bại', { description: err.message });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (

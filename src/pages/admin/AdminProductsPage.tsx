@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { productService } from '../../services/productService';
 import { Product, ProductCategory } from '../../types/product';
 import { Button } from '../../components/common/Button';
@@ -35,9 +35,14 @@ export const AdminProductsPage: React.FC = () => {
   const [techStackInput, setTechStackInput] = useState('React, Spring Boot, MySQL, Docker');
   const [featuredBadge, setFeaturedBadge] = useState('Mới ra mắt');
 
-  const refreshList = () => {
-    setProducts(productService.getAll());
+  const refreshList = async () => {
+    const list = await productService.fetchAll();
+    setProducts(list);
   };
+
+  useEffect(() => {
+    refreshList();
+  }, []);
 
   const handleOpenAdd = () => {
     setEditingProduct(null);
@@ -65,7 +70,7 @@ export const AdminProductsPage: React.FC = () => {
     setIsModalOpen(true);
   };
 
-  const handleSaveProduct = (e: React.FormEvent) => {
+  const handleSaveProduct = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!name.trim()) {
       toast.error('Vui lòng nhập tên sản phẩm');
@@ -97,7 +102,7 @@ export const AdminProductsPage: React.FC = () => {
         techStack: techs,
         featuredBadge: featuredBadge.trim() || undefined,
       };
-      productService.save(updated);
+      await productService.save(updated);
       toast.success('Đã cập nhật thông tin sản phẩm');
     } else {
       const newProd: Product = {
@@ -128,25 +133,25 @@ export const AdminProductsPage: React.FC = () => {
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
       };
-      productService.save(newProd);
+      await productService.save(newProd);
       toast.success('Đã thêm sản phẩm mới vào danh mục 2HT');
     }
 
     setIsModalOpen(false);
-    refreshList();
+    await refreshList();
   };
 
-  const handleDelete = (id: string, prodName: string) => {
+  const handleDelete = async (id: string, prodName: string) => {
     if (window.confirm(`Bạn có chắc chắn muốn xóa sản phẩm "${prodName}" khỏi hệ thống?`)) {
-      productService.delete(id);
+      await productService.delete(id);
       toast.info(`Đã xóa sản phẩm "${prodName}"`);
-      refreshList();
+      await refreshList();
     }
   };
 
-  const handleTogglePublish = (id: string) => {
-    productService.togglePublish(id);
-    refreshList();
+  const handleTogglePublish = async (id: string) => {
+    await productService.togglePublish(id);
+    await refreshList();
     toast.success('Đã thay đổi trạng thái xuất bản sản phẩm');
   };
 

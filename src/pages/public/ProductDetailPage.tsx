@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { Product } from '../../types/product';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { productService } from '../../services/productService';
 import { useCart } from '../../store/cartContext';
@@ -28,7 +29,14 @@ export const ProductDetailPage: React.FC = () => {
   const navigate = useNavigate();
   const { addToCart, setIsCartDrawerOpen } = useCart();
 
-  const product = productService.getBySlug(slug || '');
+  const [product, setProduct] = useState<Product | undefined>(() => productService.getBySlug(slug || ''));
+
+  useEffect(() => {
+    productService.fetchAll().then((list) => {
+      const found = list.find((p) => p.slug === slug);
+      if (found) setProduct(found);
+    });
+  }, [slug]);
   const [selectedPlanId, setSelectedPlanId] = useState<string>(product?.plans[0]?.id || '');
   const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(0);
   const [isDemoOpen, setIsDemoOpen] = useState(false);

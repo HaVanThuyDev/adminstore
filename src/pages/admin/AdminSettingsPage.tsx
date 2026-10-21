@@ -33,9 +33,9 @@ export const AdminSettingsPage: React.FC = () => {
   const fixedSubname = 'Information Technology';
   const fixedTechSlogan = 'Kiến tạo giải pháp số. Nâng tầm doanh nghiệp.';
 
-  const handleSave = (e: React.FormEvent) => {
+  const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
-    updateSettings({
+    await updateSettings({
       brandName: fixedBrandName,
       brandSubname: fixedSubname,
       mainMessage: fixedTechSlogan,

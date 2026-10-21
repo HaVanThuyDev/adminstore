@@ -12,6 +12,11 @@ export const BlogPage: React.FC = () => {
   const [selectedTag, setSelectedTag] = useState('all');
 
   useEffect(() => {
+    blogService.fetchAll().then((data) => {
+      if (Array.isArray(data) && data.length > 0) {
+        setBlogs(data);
+      }
+    });
     const handleStorage = () => setBlogs(blogService.getAll());
     window.addEventListener('storage', handleStorage);
     return () => window.removeEventListener('storage', handleStorage);

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { orderService } from '../../services/orderService';
 import { productService } from '../../services/productService';
@@ -31,9 +31,22 @@ import {
 } from 'lucide-react';
 
 export const AdminDashboardPage: React.FC = () => {
-  const orders = orderService.getAll();
-  const products = productService.getAll();
-  const consultations = consultationService.getAll();
+  const [orders, setOrders] = useState(() => orderService.getAll());
+  const [products, setProducts] = useState(() => productService.getAll());
+  const [consultations, setConsultations] = useState(() => consultationService.getAll());
+
+  useEffect(() => {
+    // Fetch live data from Backend API
+    orderService.fetchAll().then((data) => {
+      if (Array.isArray(data)) setOrders(data);
+    });
+    productService.fetchAll().then((data) => {
+      if (Array.isArray(data)) setProducts(data);
+    });
+    consultationService.fetchAll().then((data) => {
+      if (Array.isArray(data)) setConsultations(data);
+    });
+  }, []);
 
   const totalRevenue = orders.reduce((sum, o) => sum + (o.status !== 'DEMO_CANCELLED' ? o.total : 0), 0);
   const pendingOrdersCount = orders.filter((o) => o.status === 'DEMO_PENDING').length;

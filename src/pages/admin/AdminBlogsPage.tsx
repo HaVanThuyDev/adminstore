@@ -1,11 +1,19 @@
-import React, { useState } from 'react';
-import { initialBlogs } from '../../data/initialBlogs';
+import React, { useState, useEffect } from 'react';
+import { blogService } from '../../services/blogService';
 import { BlogPost } from '../../types/blog';
 import { FileText, Search, Clock, ArrowUpRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 export const AdminBlogsPage: React.FC = () => {
-  const [blogs] = useState<BlogPost[]>(initialBlogs);
+  const [blogs, setBlogs] = useState<BlogPost[]>(() => blogService.getAll());
+
+  useEffect(() => {
+    blogService.fetchAll().then((data) => {
+      if (Array.isArray(data) && data.length > 0) {
+        setBlogs(data);
+      }
+    });
+  }, []);
   const [searchTerm, setSearchTerm] = useState('');
 
   const filtered = blogs.filter((b) =>

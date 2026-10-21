@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { storage, STORAGE_KEYS } from '../services/storage';
+import { apiClient } from '../services/apiClient';
 import { toast } from 'sonner';
 
 export interface UserProfile {
@@ -17,6 +18,7 @@ interface AuthContextType {
   user: UserProfile | null;
   isAuthenticated: boolean;
   isAdmin: boolean;
+  login: (email: string, password?: string) => Promise<boolean>;
   loginDemo: (email: string, role?: 'user' | 'admin') => boolean;
   registerDemo: (data: { fullName: string; email: string; phone: string; company?: string }) => boolean;
   logoutDemo: () => void;
@@ -45,6 +47,38 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   useEffect(() => {
     storage.set(STORAGE_KEYS.AUTH, user);
   }, [user]);
+
+  const login = async (email: string, password?: string): Promise<boolean> => {
+    try {
+      if (password) {
+        const res = await apiClient.post<{ token: string; user: any }>('/auth/login', {
+          email: email.trim(),
+          password,
+        });
+        if (res && res.token) {
+          apiClient.setToken(res.token);
+          const u = res.user;
+          const profile: UserProfile = {
+            id: u.id,
+            fullName: u.fullName || 'Quản Trị Viên 2HT',
+            email: u.email,
+            phone: u.phone || '0383717785',
+            company: '2HT Information Technology',
+            role: (u.role === 'SUPER_ADMIN' || u.role === 'ADMIN') ? 'admin' : 'user',
+            avatar: u.avatarUrl || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80',
+            joinedDate: new Date().toISOString().split('T')[0],
+          };
+          setUser(profile);
+          toast.success('Đăng nhập Backend MySQL thành công!');
+          return true;
+        }
+      }
+    } catch (e: any) {
+      console.warn('Backend login error, falling back to demo mode:', e.message);
+    }
+    // Fallback if backend offline or demo user
+    return loginDemo(email, email.includes('admin') ? 'admin' : 'user');
+  };
 
   const loginDemo = (email: string, role: 'user' | 'admin' = 'user') => {
     const newUser: UserProfile = {
@@ -83,8 +117,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const logoutDemo = () => {
+    apiClient.removeToken();
     setUser(null);
-    toast.info('Đã đăng xuất tài khoản demo');
+    toast.info('Đã đăng xuất tài khoản');
   };
 
   const updateProfile = (updated: Partial<UserProfile>) => {
@@ -100,6 +135,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         user,
         isAuthenticated: !!user,
         isAdmin: user?.role === 'admin',
+        login,
         loginDemo,
         registerDemo,
         logoutDemo,
