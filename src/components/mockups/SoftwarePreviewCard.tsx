@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Sparkles, Lock, ArrowUpRight } from 'lucide-react';
+import { Sparkles, ArrowUpRight } from 'lucide-react';
 
 export interface SoftwarePreviewCardProps {
   type: 'ecommerce' | 'residence' | 'business' | 'sales' | 'hrm' | 'finance';
@@ -88,27 +88,6 @@ export const SoftwarePreviewCard: React.FC<SoftwarePreviewCardProps> = ({
     <div
       className={`w-full rounded-xl overflow-hidden border border-slate-300 bg-white shadow-2xl flex flex-col relative group/preview transition-all duration-300 hover:border-slate-400 ${className}`}
     >
-      {/* 1. macOS Style Window Header */}
-      <div className="h-8 bg-white px-3 flex items-center justify-between border-b border-slate-200 select-none">
-        {/* Left: Window Traffic Dots */}
-        <div className="flex items-center gap-1.5">
-          <span className="w-2.5 h-2.5 rounded-full bg-red-500/80 inline-block group-hover/preview:opacity-100 transition-opacity" />
-          <span className="w-2.5 h-2.5 rounded-full bg-amber-500/80 inline-block group-hover/preview:opacity-100 transition-opacity" />
-          <span className="w-2.5 h-2.5 rounded-full bg-emerald-500/80 inline-block group-hover/preview:opacity-100 transition-opacity" />
-        </div>
-
-        {/* Center: Address Bar */}
-        <div className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-md bg-slate-50 border border-slate-200 text-[10px] text-slate-500 font-mono tracking-tight max-w-[190px] sm:max-w-xs truncate">
-          <Lock className="w-2.5 h-2.5 text-emerald-400 shrink-0" />
-          <span className="truncate">{meta.urlPath}</span>
-        </div>
-
-        {/* Right: Live Tag */}
-        <div className="flex items-center gap-1 text-[10px] text-emerald-400 font-mono font-medium">
-          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-          <span className="hidden sm:inline">Active</span>
-        </div>
-      </div>
 
       {/* 2. Visual Product Screenshot Canvas */}
       <div className="relative h-48 w-full overflow-hidden bg-white">
@@ -143,7 +122,7 @@ export const SoftwarePreviewCard: React.FC<SoftwarePreviewCardProps> = ({
 
         {/* Preview hover button bottom right */}
         <div className="absolute bottom-2.5 right-2.5 opacity-0 group-hover/preview:opacity-100 transition-all duration-300 transform translate-y-1 group-hover/preview:translate-y-0 flex items-center gap-1 px-2 py-0.5 rounded bg-primary/90 text-[10px] font-medium text-white shadow-md">
-          <span>Giao diá»‡n v3.2</span>
+          <span>Giao diện</span>
           <ArrowUpRight className="w-3 h-3" />
         </div>
       </div>
