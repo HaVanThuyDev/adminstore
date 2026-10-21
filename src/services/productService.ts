@@ -1,10 +1,24 @@
 import { Product } from '../types/product';
 import { initialProducts } from '../data/initialProducts';
 import { storage, STORAGE_KEYS } from './storage';
+import { apiClient } from './apiClient';
 
 export const productService = {
   getAll(): Product[] {
     return storage.get<Product[]>(STORAGE_KEYS.PRODUCTS, initialProducts);
+  },
+
+  async fetchAll(): Promise<Product[]> {
+    try {
+      const data = await apiClient.get<Product[]>('/products?all=true');
+      if (Array.isArray(data) && data.length > 0) {
+        storage.set(STORAGE_KEYS.PRODUCTS, data);
+        return data;
+      }
+    } catch (e) {
+      console.warn('Backend chưa sẵn sàng, dùng cache local');
+    }
+    return this.getAll();
   },
 
   getPublished(): Product[] {
@@ -19,30 +33,45 @@ export const productService = {
     return this.getAll().find((p) => p.id === id);
   },
 
-  save(product: Product): Product {
+  async save(product: Product): Promise<Product> {
     const list = this.getAll();
     const index = list.findIndex((p) => p.id === product.id);
     if (index >= 0) {
       list[index] = { ...product, updatedAt: new Date().toISOString() };
+      storage.set(STORAGE_KEYS.PRODUCTS, list);
+      try {
+        await apiClient.put(`/products/${product.id}`, product);
+      } catch (e) {}
     } else {
       list.unshift({ ...product, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() });
+      storage.set(STORAGE_KEYS.PRODUCTS, list);
+      try {
+        await apiClient.post('/products', product);
+      } catch (e) {}
     }
-    storage.set(STORAGE_KEYS.PRODUCTS, list);
     return product;
   },
 
-  delete(id: string): boolean {
+  async delete(id: string): Promise<boolean> {
     const list = this.getAll().filter((p) => p.id !== id);
-    return storage.set(STORAGE_KEYS.PRODUCTS, list);
+    storage.set(STORAGE_KEYS.PRODUCTS, list);
+    try {
+      await apiClient.delete(`/products/${id}`);
+    } catch (e) {}
+    return true;
   },
 
-  togglePublish(id: string): boolean {
+  async togglePublish(id: string): Promise<boolean> {
     const list = this.getAll();
     const item = list.find((p) => p.id === id);
     if (item) {
       item.isPublished = !item.isPublished;
       item.updatedAt = new Date().toISOString();
-      return storage.set(STORAGE_KEYS.PRODUCTS, list);
+      storage.set(STORAGE_KEYS.PRODUCTS, list);
+      try {
+        await apiClient.patch(`/products/${id}/toggle-publish`);
+      } catch (e) {}
+      return true;
     }
     return false;
   },
