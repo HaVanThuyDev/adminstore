@@ -2,6 +2,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useCart } from '../../store/cartContext';
 import { useAuth } from '../../store/authContext';
+import { productService } from '../../services/productService';
+import { Product } from '../../types/product';
 import { Button } from '../common/Button';
 import { SearchModal } from '../common/SearchModal';
 import { 
@@ -20,7 +22,9 @@ import {
   Briefcase,
   Users,
   DollarSign,
-  ShoppingCart
+  ShoppingCart,
+  Globe,
+  Package
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -71,14 +75,38 @@ export const Header: React.FC = () => {
     { label: 'Liên hệ', href: '/contact' },
   ];
 
-  const productItems = [
-    { name: '2HT E-Commerce', slug: '2ht-ecommerce', desc: 'Sàn bán hàng đa kênh & Shopee Sync', icon: ShoppingCart, color: 'text-cyan-600 bg-cyan-50' },
-    { name: '2HT Residence', slug: '2ht-residence', desc: 'Quản lý cư dân & VietQR thông minh', icon: Building2, color: 'text-blue-600 bg-blue-50' },
-    { name: '2HT Business', slug: '2ht-business', desc: 'Quản trị ERP & Quy trình e-Approval', icon: Briefcase, color: 'text-indigo-600 bg-indigo-50' },
-    { name: '2HT Sales', slug: '2ht-sales', desc: 'CRM bán hàng & phễu Deal tự động', icon: TrendingUp, color: 'text-amber-600 bg-amber-50' },
-    { name: '2HT HRM', slug: '2ht-hrm', desc: 'Nhân sự & Chấm công GPS FaceID', icon: Users, color: 'text-emerald-600 bg-emerald-50' },
-    { name: '2HT Finance', slug: '2ht-finance', desc: 'Dòng tiền Cashflow & Cảnh báo nợ', icon: DollarSign, color: 'text-teal-600 bg-teal-50' },
-  ];
+  const [products, setProducts] = useState<Product[]>(() => productService.getPublished().slice(0, 6));
+
+  useEffect(() => {
+    productService.fetchAll().then((all) => {
+      if (Array.isArray(all) && all.length > 0) {
+        setProducts(all.filter((p) => p.isPublished).slice(0, 6));
+      }
+    });
+
+    const handleStorage = () => {
+      setProducts(productService.getPublished().slice(0, 6));
+    };
+    window.addEventListener('storage', handleStorage);
+    return () => window.removeEventListener('storage', handleStorage);
+  }, []);
+
+  const getProductIcon = (p: Product) => {
+    switch (p.category) {
+      case 'ecommerce':
+        return { icon: ShoppingCart, color: 'text-cyan-600 bg-cyan-50' };
+      case 'management':
+        return { icon: Building2, color: 'text-blue-600 bg-blue-50' };
+      case 'finance':
+        return { icon: DollarSign, color: 'text-teal-600 bg-teal-50' };
+      case 'hrm':
+        return { icon: Users, color: 'text-emerald-600 bg-emerald-50' };
+      case 'website':
+        return { icon: Globe, color: 'text-indigo-600 bg-indigo-50' };
+      default:
+        return { icon: Briefcase, color: 'text-amber-600 bg-amber-50' };
+    }
+  };
 
   const isActive = (path: string) => {
     if (path === '/') return location.pathname === '/';
@@ -149,7 +177,7 @@ export const Header: React.FC = () => {
                               >
                                 <div className="flex items-center justify-between pb-3 mb-3 border-b border-slate-100">
                                   <span className="text-xs font-bold uppercase tracking-wider text-cyan-600 flex items-center gap-1.5">
-                                    <Sparkles className="w-3.5 h-3.5 text-cyan-500" /> Hệ sinh thái 6 phần mềm 2HT
+                                    <Sparkles className="w-3.5 h-3.5 text-cyan-500" /> Hệ sinh thái {products.length} giải pháp 2HT
                                   </span>
                                   <Link
                                     to="/products"
@@ -159,24 +187,33 @@ export const Header: React.FC = () => {
                                   </Link>
                                 </div>
 
-                                <div className="grid grid-cols-2 gap-3">
-                                  {productItems.map((p) => {
-                                    const Icon = p.icon;
+                                <div className="grid grid-cols-2 gap-3 max-h-[380px] overflow-y-auto">
+                                  {products.map((p) => {
+                                    const { icon: Icon, color } = getProductIcon(p);
                                     return (
                                       <Link
-                                        key={p.slug}
+                                        key={p.id}
                                         to={`/products/${p.slug}`}
-                                        className="p-3.5 rounded-xl bg-slate-50/70 hover:bg-white border border-slate-100 hover:border-cyan-500/40 hover:shadow-md transition-all flex items-start gap-3.5 group"
+                                        onClick={() => setProductsDropdownOpen(false)}
+                                        className="p-3 rounded-xl bg-slate-50/70 hover:bg-white border border-slate-100 hover:border-cyan-500/40 hover:shadow-md transition-all flex items-start gap-3 group"
                                       >
-                                        <div className={`p-2.5 rounded-xl ${p.color} mt-0.5 flex-shrink-0 shadow-xs group-hover:scale-110 transition-transform`}>
-                                          <Icon className="w-5 h-5" />
-                                        </div>
+                                        {p.previewImage ? (
+                                          <img
+                                            src={p.previewImage}
+                                            alt={p.name}
+                                            className="w-10 h-10 rounded-xl object-cover shrink-0 border border-slate-200 mt-0.5 group-hover:scale-105 transition-transform shadow-xs"
+                                          />
+                                        ) : (
+                                          <div className={`p-2.5 rounded-xl ${color} mt-0.5 flex-shrink-0 shadow-xs group-hover:scale-110 transition-transform`}>
+                                            <Icon className="w-5 h-5" />
+                                          </div>
+                                        )}
                                         <div className="min-w-0 flex-1">
-                                          <div className="text-[13px] font-bold text-slate-800 group-hover:text-cyan-600 transition-colors">
+                                          <div className="text-[13px] font-bold text-slate-800 group-hover:text-cyan-600 transition-colors truncate">
                                             {p.name}
                                           </div>
                                           <div className="text-xs text-slate-500 line-clamp-1 mt-0.5">
-                                            {p.desc}
+                                            {p.tagline || p.description}
                                           </div>
                                         </div>
                                       </Link>
