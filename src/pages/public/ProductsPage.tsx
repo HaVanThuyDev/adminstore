@@ -279,8 +279,8 @@ export const ProductsPage: React.FC = () => {
                   <div className="flex items-baseline justify-between mb-4">
                     <span className="text-xs text-slate-500">Giá đề xuất demo:</span>
                     <span className="text-base font-extrabold text-slate-900">
-                      {product.basePrice > 0
-                        ? `${product.basePrice.toLocaleString('vi-VN')} đ`
+                      {Number(product.basePrice) > 0
+                        ? `${Math.round(Number(product.basePrice)).toLocaleString('vi-VN')} đ`
                         : 'Liên hệ báo giá'}
                     </span>
                   </div>

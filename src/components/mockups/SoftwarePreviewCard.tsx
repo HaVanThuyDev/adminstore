@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Sparkles, Lock, ArrowUpRight } from 'lucide-react';
 
 export interface SoftwarePreviewCardProps {
@@ -79,6 +79,11 @@ export const SoftwarePreviewCard: React.FC<SoftwarePreviewCardProps> = ({
   const [imgSrc, setImgSrc] = useState(imageSource);
   const [hasError, setHasError] = useState(false);
 
+  useEffect(() => {
+    setImgSrc(previewImage || meta.fallbackImage);
+    setHasError(false);
+  }, [previewImage, meta.fallbackImage]);
+
   return (
     <div
       className={`w-full rounded-xl overflow-hidden border border-slate-300 bg-white shadow-2xl flex flex-col relative group/preview transition-all duration-300 hover:border-slate-400 ${className}`}
@@ -132,7 +137,7 @@ export const SoftwarePreviewCard: React.FC<SoftwarePreviewCardProps> = ({
         <div className="absolute bottom-2.5 left-2.5 flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-slate-50 backdrop-blur-md border border-slate-300 shadow-lg">
           <Sparkles className="w-3 h-3 text-accent shrink-0 animate-pulse" />
           <span className="text-[10px] font-bold text-slate-700 tracking-wide">
-            {meta.tag}
+            {previewImage && name ? name : meta.tag}
           </span>
         </div>
 

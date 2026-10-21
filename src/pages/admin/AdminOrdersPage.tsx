@@ -668,7 +668,7 @@ export const AdminOrdersPage: React.FC = () => {
               >
                 {products.map((p) => (
                   <option key={p.id} value={p.id}>
-                    {p.name} — {p.basePrice.toLocaleString('vi-VN')} đ
+                    {p.name} — {Math.round(Number(p.basePrice)).toLocaleString('vi-VN')} đ
                   </option>
                 ))}
               </select>

@@ -350,7 +350,7 @@ export const AdminProductsPage: React.FC = () => {
                     <span className="text-slate-600 font-medium">{p.categoryName}</span>
                   </td>
                   <td className="p-4 font-bold text-accent">
-                    {p.basePrice > 0 ? `${p.basePrice.toLocaleString('vi-VN')} đ` : 'Báo giá'}
+                    {Number(p.basePrice) > 0 ? `${Math.round(Number(p.basePrice)).toLocaleString('vi-VN')} đ` : 'Báo giá'}
                   </td>
                   <td className="p-4">
                     <div className="flex flex-wrap gap-1 max-w-[200px]">
