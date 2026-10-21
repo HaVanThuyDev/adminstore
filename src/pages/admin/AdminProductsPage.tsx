@@ -41,7 +41,8 @@ export const AdminProductsPage: React.FC = () => {
   const [featuredBadge, setFeaturedBadge] = useState('Mới ra mắt');
   const [previewImage, setPreviewImage] = useState('');
   const [dataSourceId, setDataSourceId] = useState<number | undefined>(undefined);
-  const [isUploading, setIsUploading] = useState(false);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [isSaving, setIsSaving] = useState(false);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const refreshList = async () => {
@@ -53,7 +54,7 @@ export const AdminProductsPage: React.FC = () => {
     refreshList();
   }, []);
 
-  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
@@ -67,41 +68,19 @@ export const AdminProductsPage: React.FC = () => {
       return;
     }
 
-    setIsUploading(true);
-    const loadingToast = toast.loading('Đang tải ảnh lên Cloudinary qua Worker Threads & Stream...');
-
-    try {
-      const res = await apiClient.uploadFile<{ id: number; cloudinaryUrl: string; fileName: string }>(
-        '/data-sources/upload',
-        file
-      );
-
-      if (res?.cloudinaryUrl) {
-        setPreviewImage(res.cloudinaryUrl);
-        setDataSourceId(res.id);
-        toast.success('Tải ảnh lên Cloudinary thành công!', {
-          id: loadingToast,
-          description: `Đã lưu vào data_souses ID #${res.id}.`,
-        });
-      } else {
-        throw new Error('Không nhận được đường dẫn ảnh từ máy chủ');
-      }
-    } catch (err: any) {
-      toast.error('Lỗi tải ảnh lên', {
-        id: loadingToast,
-        description: err.message || 'Không thể kết nối đến backend',
-      });
-    } finally {
-      setIsUploading(false);
-      if (fileInputRef.current) {
-        fileInputRef.current.value = '';
-      }
-    }
+    setSelectedFile(file);
+    // Hiển thị xem trước ảnh ngay lập tức bằng Object URL cục bộ
+    const localUrl = URL.createObjectURL(file);
+    setPreviewImage(localUrl);
   };
 
   const handleRemoveImage = () => {
+    setSelectedFile(null);
     setPreviewImage('');
     setDataSourceId(undefined);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
   };
 
   const handleOpenAdd = () => {
@@ -114,6 +93,7 @@ export const AdminProductsPage: React.FC = () => {
     setDescription('');
     setTechStackInput('React, Spring Boot, MySQL, Docker');
     setFeaturedBadge('Mới ra mắt');
+    setSelectedFile(null);
     setPreviewImage('');
     setDataSourceId(undefined);
     setIsModalOpen(true);
@@ -129,6 +109,7 @@ export const AdminProductsPage: React.FC = () => {
     setDescription(prod.description);
     setTechStackInput(prod.techStack.join(', '));
     setFeaturedBadge(prod.featuredBadge || '');
+    setSelectedFile(null);
     setPreviewImage(prod.previewImage || '');
     setDataSourceId(prod.dataSourceId);
     setIsModalOpen(true);
@@ -139,6 +120,31 @@ export const AdminProductsPage: React.FC = () => {
     if (!name.trim()) {
       toast.error('Vui lòng nhập tên sản phẩm');
       return;
+    }
+
+    setIsSaving(true);
+
+    let finalDataSourceId = dataSourceId;
+    let finalPreviewImage = previewImage;
+
+    // Khi người dùng bấm lưu, nếu có chọn file ảnh mới thì mới upload lên Cloudinary & lưu data_souses
+    if (selectedFile) {
+      const uploadToast = toast.loading('Đang xử lý tải ảnh lên hệ thống...');
+      try {
+        const res = await apiClient.uploadFile<{ id: number; cloudinaryUrl: string; fileName: string }>(
+          '/data-sources/upload',
+          selectedFile
+        );
+        if (res?.id) {
+          finalDataSourceId = res.id;
+          finalPreviewImage = res.cloudinaryUrl;
+          toast.dismiss(uploadToast);
+        }
+      } catch (err: any) {
+        toast.error('Lỗi tải ảnh lên: ' + (err.message || 'Lỗi kết nối'), { id: uploadToast });
+        setIsSaving(false);
+        return;
+      }
     }
 
     const finalSlug = slug.trim() || name.toLowerCase().replace(/[^a-z0-9]+/g, '-');
@@ -153,61 +159,68 @@ export const AdminProductsPage: React.FC = () => {
       custom: 'Giải pháp theo yêu cầu',
     };
 
-    if (editingProduct) {
-      const updated: Product = {
-        ...editingProduct,
-        name,
-        slug: finalSlug,
-        tagline,
-        category,
-        categoryName: categoryNames[category],
-        basePrice,
-        description,
-        techStack: techs,
-        featuredBadge: featuredBadge.trim() || undefined,
-        previewImage: previewImage.trim() || undefined,
-        dataSourceId: dataSourceId || undefined,
-      };
-      await productService.save(updated);
-      toast.success('Đã cập nhật thông tin sản phẩm');
-    } else {
-      const newProd: Product = {
-        id: `prod-${Date.now()}`,
-        name,
-        slug: finalSlug,
-        tagline,
-        category,
-        categoryName: categoryNames[category],
-        description,
-        longDescription: description,
-        basePrice,
-        techStack: techs,
-        featuredBadge: featuredBadge.trim() || undefined,
-        previewImage: previewImage.trim() || undefined,
-        dataSourceId: dataSourceId || undefined,
-        hasLiveDemo: true,
-        mockupType: (category === 'ecommerce' ? 'ecommerce' : category === 'hrm' ? 'hrm' : 'business') as any,
-        screenshots: [],
-        features: [
-          { title: 'Tính năng tiêu chuẩn 2HT', description: 'Được thiết kế tối ưu hiệu năng.', iconName: 'Zap' },
-        ],
-        plans: [
-          { id: 'plan-def', name: 'Gói Tiêu Chuẩn', price: basePrice, billingCycle: 'vĩnh viễn', description: 'Gói tiêu chuẩn.', features: ['Bảo hành 12 tháng'] },
-        ],
-        faqs: [],
-        isPublished: true,
-        rating: 5.0,
-        reviewsCount: 1,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      };
-      await productService.save(newProd);
-      toast.success('Đã thêm sản phẩm mới vào danh mục 2HT');
-    }
+    try {
+      if (editingProduct) {
+        const updated: Product = {
+          ...editingProduct,
+          name,
+          slug: finalSlug,
+          tagline,
+          category,
+          categoryName: categoryNames[category],
+          basePrice,
+          description,
+          techStack: techs,
+          featuredBadge: featuredBadge.trim() || undefined,
+          previewImage: finalPreviewImage.startsWith('blob:') ? undefined : (finalPreviewImage || undefined),
+          dataSourceId: finalDataSourceId || undefined,
+        };
+        await productService.save(updated);
+        toast.success('Đã cập nhật thông tin sản phẩm');
+      } else {
+        const newProd: Product = {
+          id: `prod-${Date.now()}`,
+          name,
+          slug: finalSlug,
+          tagline,
+          category,
+          categoryName: categoryNames[category],
+          description,
+          longDescription: description,
+          basePrice,
+          techStack: techs,
+          featuredBadge: featuredBadge.trim() || undefined,
+          previewImage: finalPreviewImage.startsWith('blob:') ? undefined : (finalPreviewImage || undefined),
+          dataSourceId: finalDataSourceId || undefined,
+          hasLiveDemo: true,
+          mockupType: (category === 'ecommerce' ? 'ecommerce' : category === 'hrm' ? 'hrm' : 'business') as any,
+          screenshots: [],
+          features: [
+            { title: 'Tính năng tiêu chuẩn 2HT', description: 'Được thiết kế tối ưu hiệu năng.', iconName: 'Zap' },
+          ],
+          plans: [
+            { id: 'plan-def', name: 'Gói Tiêu Chuẩn', price: basePrice, billingCycle: 'vĩnh viễn', description: 'Gói tiêu chuẩn.', features: ['Bảo hành 12 tháng'] },
+          ],
+          faqs: [],
+          isPublished: true,
+          rating: 5.0,
+          reviewsCount: 1,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        };
+        await productService.save(newProd);
+        toast.success('Đã thêm sản phẩm mới vào danh mục 2HT');
+      }
 
-    setIsModalOpen(false);
-    await refreshList();
+      setIsModalOpen(false);
+      await refreshList();
+    } catch (err: any) {
+      toast.error('Lỗi lưu sản phẩm: ' + (err.message || 'Lỗi server'));
+    } finally {
+      setIsSaving(false);
+    }
   };
+
 
   const handleDelete = async (id: string, prodName: string) => {
     if (window.confirm(`Bạn có chắc chắn muốn xóa sản phẩm "${prodName}" khỏi hệ thống?`)) {
@@ -421,65 +434,48 @@ export const AdminProductsPage: React.FC = () => {
             placeholder="VD: Hệ thống điều phối kho vận & vận chuyển thông minh"
           />
 
-          {/* Tải ảnh đại diện / Mockup sản phẩm */}
+          {/* Nhập ảnh */}
           <div className="space-y-1.5">
             <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider">
-              Ảnh đại diện / Mockup sản phẩm (Cloudinary)
+              Nhập ảnh
             </label>
 
-            <div className="border-2 border-dashed border-slate-200 hover:border-primary/50 transition-colors rounded-xl p-4 bg-slate-50/50">
+            <div className="border-2 border-dashed border-slate-200 hover:border-primary/50 transition-colors rounded-xl p-3 bg-slate-50/50">
               {previewImage ? (
-                <div className="space-y-3">
-                  <div className="relative group w-full h-44 rounded-lg overflow-hidden bg-white flex items-center justify-center border border-slate-200">
-                    <img
-                      src={previewImage}
-                      alt="Ảnh xem trước"
-                      className="w-full h-full object-contain"
-                    />
-                    <button
-                      type="button"
-                      onClick={handleRemoveImage}
-                      className="absolute top-2 right-2 bg-rose-500 text-white p-1.5 rounded-lg shadow-md hover:bg-rose-600 transition-colors"
-                      title="Xóa ảnh"
-                    >
-                      <X className="w-4 h-4" />
-                    </button>
-                  </div>
-
-                  <div className="flex items-center justify-between text-xs text-slate-500 bg-white p-2.5 rounded-lg border border-slate-200">
-                    <div className="flex items-center gap-2 truncate">
-                      <span className="inline-block px-2 py-0.5 rounded text-[10px] font-mono bg-blue-50 text-blue-600 border border-blue-200">
-                        {dataSourceId ? `data_souses ID: #${dataSourceId}` : 'External URL'}
-                      </span>
-                      <span className="truncate text-[11px] text-slate-600 font-mono">{previewImage}</span>
-                    </div>
+                <div className="relative group w-full h-40 rounded-lg overflow-hidden bg-white flex items-center justify-center border border-slate-200">
+                  <img
+                    src={previewImage}
+                    alt="Xem trước ảnh"
+                    className="w-full h-full object-contain"
+                  />
+                  <div className="absolute top-2 right-2 flex items-center gap-1.5">
                     <button
                       type="button"
                       onClick={() => fileInputRef.current?.click()}
-                      disabled={isUploading}
-                      className="text-primary hover:underline shrink-0 text-xs font-medium ml-2"
+                      className="bg-white/90 text-slate-700 px-2.5 py-1 rounded-lg shadow-md hover:bg-white text-xs font-medium border border-slate-200"
                     >
                       Đổi ảnh
+                    </button>
+                    <button
+                      type="button"
+                      onClick={handleRemoveImage}
+                      className="bg-rose-500 text-white p-1.5 rounded-lg shadow-md hover:bg-rose-600 transition-colors"
+                      title="Xóa ảnh"
+                    >
+                      <X className="w-4 h-4" />
                     </button>
                   </div>
                 </div>
               ) : (
                 <div
                   onClick={() => fileInputRef.current?.click()}
-                  className="flex flex-col items-center justify-center py-5 cursor-pointer text-center group"
+                  className="flex flex-col items-center justify-center py-6 cursor-pointer text-center group"
                 >
-                  <div className="w-12 h-12 rounded-full bg-primary/10 text-primary flex items-center justify-center mb-2.5 group-hover:scale-110 transition-transform">
-                    {isUploading ? (
-                      <Loader2 className="w-6 h-6 animate-spin text-primary" />
-                    ) : (
-                      <UploadCloud className="w-6 h-6" />
-                    )}
+                  <div className="w-10 h-10 rounded-full bg-primary/10 text-primary flex items-center justify-center mb-2 group-hover:scale-105 transition-transform">
+                    <UploadCloud className="w-5 h-5" />
                   </div>
-                  <p className="text-xs font-semibold text-slate-700">
-                    {isUploading ? 'Đang tải qua Worker Threads & Stream...' : 'Nhấp để tải ảnh lên Cloudinary'}
-                  </p>
-                  <p className="text-[11px] text-slate-400 mt-1">
-                    Định dạng PNG, JPG, WEBP (Tối đa 10MB). Tự động lưu ID vào data_souses và URL vào Products.
+                  <p className="text-xs font-medium text-slate-600">
+                    Nhấp để chọn ảnh
                   </p>
                 </div>
               )}
@@ -489,31 +485,8 @@ export const AdminProductsPage: React.FC = () => {
                 type="file"
                 accept="image/*"
                 className="hidden"
-                onChange={handleFileUpload}
-                disabled={isUploading}
+                onChange={handleFileSelect}
               />
-            </div>
-
-            <div className="flex items-center gap-2 pt-1">
-              <input
-                type="text"
-                placeholder="Hoặc dán URL ảnh trực tiếp (https://...)"
-                value={previewImage}
-                onChange={(e) => {
-                  setPreviewImage(e.target.value);
-                  setDataSourceId(undefined);
-                }}
-                className="flex-1 bg-white border border-slate-300 rounded-lg px-3 py-1.5 text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:border-primary"
-              />
-              {previewImage && (
-                <button
-                  type="button"
-                  onClick={handleRemoveImage}
-                  className="text-xs text-slate-400 hover:text-rose-500 px-2 py-1.5"
-                >
-                  Xóa
-                </button>
-              )}
             </div>
           </div>
 
@@ -536,12 +509,16 @@ export const AdminProductsPage: React.FC = () => {
               </select>
             </div>
 
-            <Input
-              label="Giá đề xuất demo (VNĐ)"
-              type="number"
-              value={basePrice}
-              onChange={(e) => setBasePrice(Number(e.target.value))}
-            />
+           <Input
+  label="Giá đề xuất demo (VNĐ)"
+  type="text"
+  placeholder="Nhập giá tiền, VD: 9.000.000 (0 là Báo giá)"
+  value={basePrice ? Number(basePrice).toLocaleString('vi-VN') : ''}
+  onChange={(e) => {
+    const rawVal = e.target.value.replace(/\D/g, '');
+    setBasePrice(rawVal ? Number(rawVal) : 0);
+  }}
+/>
           </div>
 
           <Input
@@ -567,11 +544,11 @@ export const AdminProductsPage: React.FC = () => {
           />
 
           <div className="flex justify-end gap-3 pt-4 border-t border-slate-200">
-            <Button size="md" variant="outline" type="button" onClick={() => setIsModalOpen(false)}>
+            <Button size="md" variant="outline" type="button" onClick={() => setIsModalOpen(false)} disabled={isSaving}>
               Hủy bỏ
             </Button>
-            <Button size="md" variant="primary" type="submit">
-              {editingProduct ? 'Lưu thay đổi' : 'Tạo sản phẩm'}
+            <Button size="md" variant="primary" type="submit" disabled={isSaving}>
+              {isSaving ? 'Đang lưu...' : (editingProduct ? 'Lưu thay đổi' : 'Tạo sản phẩm')}
             </Button>
           </div>
         </form>
