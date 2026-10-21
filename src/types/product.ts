@@ -45,6 +45,7 @@ export interface Product {
   demoUrl?: string;
   mockupType: 'ecommerce' | 'residence' | 'business' | 'sales' | 'hrm' | 'finance';
   previewImage?: string;
+  dataSourceId?: number;
   screenshots: string[];
   features: ProductFeature[];
   plans: ProductPricingPlan[];

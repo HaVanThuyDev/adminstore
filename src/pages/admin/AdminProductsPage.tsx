@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { productService } from '../../services/productService';
+import { apiClient } from '../../services/apiClient';
 import { Product, ProductCategory } from '../../types/product';
 import { Button } from '../../components/common/Button';
 import { Input, Textarea } from '../../components/common/Input';
@@ -15,7 +16,11 @@ import {
   EyeOff, 
   RotateCcw,
   Sparkles,
-  Check
+  Check,
+  UploadCloud,
+  Image as ImageIcon,
+  X,
+  Loader2
 } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -34,6 +39,10 @@ export const AdminProductsPage: React.FC = () => {
   const [description, setDescription] = useState('');
   const [techStackInput, setTechStackInput] = useState('React, Spring Boot, MySQL, Docker');
   const [featuredBadge, setFeaturedBadge] = useState('Mới ra mắt');
+  const [previewImage, setPreviewImage] = useState('');
+  const [dataSourceId, setDataSourceId] = useState<number | undefined>(undefined);
+  const [isUploading, setIsUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const refreshList = async () => {
     const list = await productService.fetchAll();
@@ -43,6 +52,57 @@ export const AdminProductsPage: React.FC = () => {
   useEffect(() => {
     refreshList();
   }, []);
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      toast.error('Vui lòng chọn tệp định dạng hình ảnh (.jpg, .png, .webp,...)');
+      return;
+    }
+
+    if (file.size > 10 * 1024 * 1024) {
+      toast.error('Kích thước ảnh tối đa là 10MB');
+      return;
+    }
+
+    setIsUploading(true);
+    const loadingToast = toast.loading('Đang tải ảnh lên Cloudinary qua Worker Threads & Stream...');
+
+    try {
+      const res = await apiClient.uploadFile<{ id: number; cloudinaryUrl: string; fileName: string }>(
+        '/data-sources/upload',
+        file
+      );
+
+      if (res?.cloudinaryUrl) {
+        setPreviewImage(res.cloudinaryUrl);
+        setDataSourceId(res.id);
+        toast.success('Tải ảnh lên Cloudinary thành công!', {
+          id: loadingToast,
+          description: `Đã lưu vào data_souses ID #${res.id}.`,
+        });
+      } else {
+        throw new Error('Không nhận được đường dẫn ảnh từ máy chủ');
+      }
+    } catch (err: any) {
+      toast.error('Lỗi tải ảnh lên', {
+        id: loadingToast,
+        description: err.message || 'Không thể kết nối đến backend',
+      });
+    } finally {
+      setIsUploading(false);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
+    }
+  };
+
+  const handleRemoveImage = () => {
+    setPreviewImage('');
+    setDataSourceId(undefined);
+  };
 
   const handleOpenAdd = () => {
     setEditingProduct(null);
@@ -54,6 +114,8 @@ export const AdminProductsPage: React.FC = () => {
     setDescription('');
     setTechStackInput('React, Spring Boot, MySQL, Docker');
     setFeaturedBadge('Mới ra mắt');
+    setPreviewImage('');
+    setDataSourceId(undefined);
     setIsModalOpen(true);
   };
 
@@ -67,6 +129,8 @@ export const AdminProductsPage: React.FC = () => {
     setDescription(prod.description);
     setTechStackInput(prod.techStack.join(', '));
     setFeaturedBadge(prod.featuredBadge || '');
+    setPreviewImage(prod.previewImage || '');
+    setDataSourceId(prod.dataSourceId);
     setIsModalOpen(true);
   };
 
@@ -101,6 +165,8 @@ export const AdminProductsPage: React.FC = () => {
         description,
         techStack: techs,
         featuredBadge: featuredBadge.trim() || undefined,
+        previewImage: previewImage.trim() || undefined,
+        dataSourceId: dataSourceId || undefined,
       };
       await productService.save(updated);
       toast.success('Đã cập nhật thông tin sản phẩm');
@@ -117,6 +183,8 @@ export const AdminProductsPage: React.FC = () => {
         basePrice,
         techStack: techs,
         featuredBadge: featuredBadge.trim() || undefined,
+        previewImage: previewImage.trim() || undefined,
+        dataSourceId: dataSourceId || undefined,
         hasLiveDemo: true,
         mockupType: (category === 'ecommerce' ? 'ecommerce' : category === 'hrm' ? 'hrm' : 'business') as any,
         screenshots: [],
@@ -232,13 +300,38 @@ export const AdminProductsPage: React.FC = () => {
               {filtered.map((p) => (
                 <tr key={p.id} className="hover:bg-slate-50/80 transition-colors">
                   <td className="p-4">
-                    <div className="font-bold text-slate-900 text-sm">{p.name}</div>
-                    <div className="text-[11px] text-slate-500 truncate max-w-xs">{p.tagline}</div>
-                    {p.featuredBadge && (
-                      <span className="inline-block mt-1 text-[10px] bg-primary/20 text-primary-light px-2 py-0.5 rounded font-medium">
-                        {p.featuredBadge}
-                      </span>
-                    )}
+                    <div className="flex items-center gap-3">
+                      {p.previewImage ? (
+                        <img
+                          src={p.previewImage}
+                          alt={p.name}
+                          className="w-12 h-12 object-cover rounded-xl border border-slate-200 shrink-0 bg-slate-50 shadow-xs"
+                          onError={(e) => {
+                            (e.target as HTMLElement).style.display = 'none';
+                          }}
+                        />
+                      ) : (
+                        <div className="w-12 h-12 rounded-xl bg-slate-100 border border-slate-200 flex items-center justify-center shrink-0 text-slate-400">
+                          <ImageIcon className="w-5 h-5" />
+                        </div>
+                      )}
+                      <div className="min-w-0">
+                        <div className="font-bold text-slate-900 text-sm truncate max-w-xs">{p.name}</div>
+                        <div className="text-[11px] text-slate-500 truncate max-w-xs">{p.tagline}</div>
+                        <div className="flex items-center gap-1.5 mt-1">
+                          {p.featuredBadge && (
+                            <span className="inline-block text-[10px] bg-primary/20 text-primary-light px-2 py-0.5 rounded font-medium">
+                              {p.featuredBadge}
+                            </span>
+                          )}
+                          {p.dataSourceId && (
+                            <span className="inline-block text-[9px] font-mono bg-blue-50 text-blue-600 px-1.5 py-0.5 rounded border border-blue-200">
+                              Media #{p.dataSourceId}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    </div>
                   </td>
                   <td className="p-4">
                     <span className="text-slate-600 font-medium">{p.categoryName}</span>
@@ -327,6 +420,102 @@ export const AdminProductsPage: React.FC = () => {
             onChange={(e) => setTagline(e.target.value)}
             placeholder="VD: Hệ thống điều phối kho vận & vận chuyển thông minh"
           />
+
+          {/* Tải ảnh đại diện / Mockup sản phẩm */}
+          <div className="space-y-1.5">
+            <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider">
+              Ảnh đại diện / Mockup sản phẩm (Cloudinary)
+            </label>
+
+            <div className="border-2 border-dashed border-slate-200 hover:border-primary/50 transition-colors rounded-xl p-4 bg-slate-50/50">
+              {previewImage ? (
+                <div className="space-y-3">
+                  <div className="relative group w-full h-44 rounded-lg overflow-hidden bg-white flex items-center justify-center border border-slate-200">
+                    <img
+                      src={previewImage}
+                      alt="Ảnh xem trước"
+                      className="w-full h-full object-contain"
+                    />
+                    <button
+                      type="button"
+                      onClick={handleRemoveImage}
+                      className="absolute top-2 right-2 bg-rose-500 text-white p-1.5 rounded-lg shadow-md hover:bg-rose-600 transition-colors"
+                      title="Xóa ảnh"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
+
+                  <div className="flex items-center justify-between text-xs text-slate-500 bg-white p-2.5 rounded-lg border border-slate-200">
+                    <div className="flex items-center gap-2 truncate">
+                      <span className="inline-block px-2 py-0.5 rounded text-[10px] font-mono bg-blue-50 text-blue-600 border border-blue-200">
+                        {dataSourceId ? `data_souses ID: #${dataSourceId}` : 'External URL'}
+                      </span>
+                      <span className="truncate text-[11px] text-slate-600 font-mono">{previewImage}</span>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => fileInputRef.current?.click()}
+                      disabled={isUploading}
+                      className="text-primary hover:underline shrink-0 text-xs font-medium ml-2"
+                    >
+                      Đổi ảnh
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <div
+                  onClick={() => fileInputRef.current?.click()}
+                  className="flex flex-col items-center justify-center py-5 cursor-pointer text-center group"
+                >
+                  <div className="w-12 h-12 rounded-full bg-primary/10 text-primary flex items-center justify-center mb-2.5 group-hover:scale-110 transition-transform">
+                    {isUploading ? (
+                      <Loader2 className="w-6 h-6 animate-spin text-primary" />
+                    ) : (
+                      <UploadCloud className="w-6 h-6" />
+                    )}
+                  </div>
+                  <p className="text-xs font-semibold text-slate-700">
+                    {isUploading ? 'Đang tải qua Worker Threads & Stream...' : 'Nhấp để tải ảnh lên Cloudinary'}
+                  </p>
+                  <p className="text-[11px] text-slate-400 mt-1">
+                    Định dạng PNG, JPG, WEBP (Tối đa 10MB). Tự động lưu ID vào data_souses và URL vào Products.
+                  </p>
+                </div>
+              )}
+
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={handleFileUpload}
+                disabled={isUploading}
+              />
+            </div>
+
+            <div className="flex items-center gap-2 pt-1">
+              <input
+                type="text"
+                placeholder="Hoặc dán URL ảnh trực tiếp (https://...)"
+                value={previewImage}
+                onChange={(e) => {
+                  setPreviewImage(e.target.value);
+                  setDataSourceId(undefined);
+                }}
+                className="flex-1 bg-white border border-slate-300 rounded-lg px-3 py-1.5 text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:border-primary"
+              />
+              {previewImage && (
+                <button
+                  type="button"
+                  onClick={handleRemoveImage}
+                  className="text-xs text-slate-400 hover:text-rose-500 px-2 py-1.5"
+                >
+                  Xóa
+                </button>
+              )}
+            </div>
+          </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
