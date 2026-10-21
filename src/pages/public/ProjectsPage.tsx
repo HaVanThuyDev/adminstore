@@ -2,7 +2,7 @@ import React from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { initialProjects } from '../../data/initialProjects';
 import { SectionHeading } from '../../components/common/SectionHeading';
-import { ArrowRight, ChevronRight, Layers } from 'lucide-react';
+import { ArrowRight, ChevronRight } from 'lucide-react';
 
 export const ProjectsPage: React.FC = () => {
   const navigate = useNavigate();
@@ -12,16 +12,16 @@ export const ProjectsPage: React.FC = () => {
       {/* Breadcrumb */}
       <div className="flex items-center gap-2 text-xs text-slate-500">
         <Link to="/" className="hover:text-primary transition-colors">
-          Trang chá»§
+          Trang chủ
         </Link>
         <ChevronRight className="w-3.5 h-3.5 text-slate-500" />
-        <span className="text-slate-900 font-medium">Dá»± Ã¡n tiÃªu biá»ƒu</span>
+        <span className="text-slate-900 font-medium">Dự án tiêu biểu</span>
       </div>
 
       <SectionHeading
-        eyebrow="Case Studies & Triá»ƒn khai"
-        title="CÃ¡c dá»± Ã¡n chuyá»ƒn Ä‘á»•i sá»‘ thÃ nh cÃ´ng."
-        description="KhÃ¡m phÃ¡ cÃ¡c case study thá»±c táº¿ thá»ƒ hiá»‡n nÄƒng lá»±c giáº£i quyáº¿t bÃ i toÃ¡n nghiá»‡p vá»¥ phá»©c táº¡p cá»§a 2HT Information Technology."
+        eyebrow="Case Studies & Triển khai"
+        title="Các dự án chuyển đổi số thành công."
+        description="Khám phá các case study thực tế thể hiện năng lực giải quyết bài toán nghiệp vụ phức tạp của 2HT Information Technology."
       />
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -45,7 +45,7 @@ export const ProjectsPage: React.FC = () => {
             <div className="p-6 flex-1 flex flex-col justify-between space-y-4">
               <div>
                 <span className="text-[11px] font-mono text-slate-500 block mb-1">
-                  NÄƒm {project.completionYear} â€¢ {project.clientType}
+                  Năm {project.completionYear} • {project.clientType}
                 </span>
                 <h3 className="text-lg font-bold text-slate-900 group-hover:text-primary transition-colors">
                   {project.title}
@@ -57,7 +57,7 @@ export const ProjectsPage: React.FC = () => {
               </div>
 
               <div className="pt-4 border-t border-slate-100 flex items-center justify-between text-xs text-primary font-semibold">
-                <span>Xem case study Ä‘áº§y Ä‘á»§</span>
+                <span>Xem case study đầy đủ</span>
                 <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
               </div>
             </div>

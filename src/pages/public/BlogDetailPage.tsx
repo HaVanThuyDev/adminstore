@@ -3,7 +3,7 @@ import { useParams, Link, useNavigate } from 'react-router-dom';
 import { blogService } from '../../services/blogService';
 import { BlogPost } from '../../types/blog';
 import { Button } from '../../components/common/Button';
-import { ChevronRight, Clock, Calendar, ArrowLeft, Share2 } from 'lucide-react';
+import { ChevronRight, Clock, ArrowLeft, Share2 } from 'lucide-react';
 import { toast } from 'sonner';
 
 export const BlogDetailPage: React.FC = () => {
@@ -23,9 +23,9 @@ export const BlogDetailPage: React.FC = () => {
   if (!blog) {
     return (
       <div className="max-w-4xl mx-auto px-4 py-20 text-center space-y-4">
-        <h2 className="text-2xl font-bold text-slate-900">KhÃƒÂ´ng tÃƒÂ¬m thÃ¡ÂºÂ¥y bÃƒÂ i viÃ¡ÂºÂ¿t</h2>
+        <h2 className="text-2xl font-bold text-slate-900">Không tìm thấy bài viết</h2>
         <Button variant="primary" onClick={() => navigate('/blog')}>
-          Quay lÃ¡ÂºÂ¡i danh sÃƒÂ¡ch bÃƒÂ i viÃ¡ÂºÂ¿t
+          Quay lại danh sách bài viết
         </Button>
       </div>
     );
@@ -34,7 +34,7 @@ export const BlogDetailPage: React.FC = () => {
   const handleShare = () => {
     if (navigator.clipboard) {
       navigator.clipboard.writeText(window.location.href);
-      toast.success('Ã„ÂÃƒÂ£ sao chÃƒÂ©p liÃƒÂªn kÃ¡ÂºÂ¿t bÃƒÂ i viÃ¡ÂºÂ¿t!');
+      toast.success('Đã sao chép liên kết bài viết!');
     }
   };
 
@@ -43,7 +43,7 @@ export const BlogDetailPage: React.FC = () => {
       {/* Breadcrumb */}
       <div className="flex items-center gap-2 text-xs text-slate-500">
         <Link to="/" className="hover:text-primary transition-colors">
-          Trang chÃ¡Â»Â§
+          Trang chủ
         </Link>
         <ChevronRight className="w-3.5 h-3.5 text-slate-500" />
         <Link to="/blog" className="hover:text-primary transition-colors">
@@ -82,7 +82,7 @@ export const BlogDetailPage: React.FC = () => {
             <button
               onClick={handleShare}
               className="p-2 rounded-lg bg-slate-100 border border-slate-200 text-slate-600 hover:text-slate-900"
-              title="Chia sÃ¡ÂºÂ»"
+              title="Chia sẻ"
             >
               <Share2 className="w-4 h-4" />
             </button>
@@ -119,7 +119,7 @@ export const BlogDetailPage: React.FC = () => {
 
       <div className="pt-8 border-t border-slate-200 flex flex-wrap items-center justify-between gap-4">
         <div className="flex flex-wrap items-center gap-2">
-          <span className="text-xs text-slate-500 font-semibold">ChÃ¡Â»Â§ Ã„â€˜Ã¡Â»Â:</span>
+          <span className="text-xs text-slate-500 font-semibold">Chủ đề:</span>
           {blog.tags.map((t) => (
             <span
               key={t}
@@ -136,7 +136,7 @@ export const BlogDetailPage: React.FC = () => {
           onClick={() => navigate('/blog')}
           icon={<ArrowLeft className="w-4 h-4" />}
         >
-          Quay lÃ¡ÂºÂ¡i danh sÃƒÂ¡ch bÃƒÂ i viÃ¡ÂºÂ¿t
+          Quay lại danh sách bài viết
         </Button>
       </div>
     </article>

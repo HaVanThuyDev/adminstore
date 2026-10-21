@@ -6,11 +6,8 @@ import { useSettings } from '../../store/settingsContext';
 import { 
   ShieldCheck, 
   Target, 
-  Lightbulb, 
-  Users, 
   ArrowRight, 
   ChevronRight,
-  Code2,
   Cpu,
   Award
 } from 'lucide-react';
@@ -21,23 +18,23 @@ export const AboutPage: React.FC = () => {
 
   const values = [
     {
-      title: 'Tá»± chá»§ cÃ´ng nghá»‡ & Tá»‘i Æ°u hiá»‡u nÄƒng',
-      desc: '100% dÃ²ng lá»‡nh trong há»‡ sinh thÃ¡i 2HT Ä‘Æ°á»£c cÃ¡c ká»¹ sÆ° nghiÃªn cá»©u vÃ  tá»± phÃ¡t triá»ƒn, Ä‘áº£m báº£o Ä‘á»™ linh hoáº¡t khi tÃ¹y biáº¿n cho khÃ¡ch hÃ ng.',
+      title: 'Tự chủ công nghệ & Tối ưu hiệu năng',
+      desc: '100% dòng lệnh trong hệ sinh thái 2HT được các kỹ sư nghiên cứu và tự phát triển, đảm bảo độ linh hoạt khi tùy biến cho khách hàng.',
       icon: Cpu,
     },
     {
-      title: 'Giáº£i quyáº¿t bÃ i toÃ¡n thá»±c táº¿',
-      desc: 'CÃ´ng nghá»‡ chá»‰ thá»±c sá»± cÃ³ giÃ¡ trá»‹ khi giÃºp doanh nghiá»‡p tiáº¿t kiá»‡m chi phÃ­, loáº¡i bá» quy trÃ¬nh rÆ°á»m rÃ  vÃ  gia tÄƒng doanh sá»‘.',
+      title: 'Giải quyết bài toán thực tế',
+      desc: 'Công nghệ chỉ thực sự có giá trị khi giúp doanh nghiệp tiết kiệm chi phí, loại bỏ quy trình rườm rà và gia tăng doanh số.',
       icon: Target,
     },
     {
-      title: 'Báº£o máº­t & á»”n Ä‘á»‹nh dÃ i háº¡n',
-      desc: 'Thiáº¿t káº¿ kiáº¿n trÃºc chuáº©n báº£o máº­t quá»‘c táº¿, dá»¯ liá»‡u sao lÆ°u liÃªn tá»¥c vÃ  kháº£ nÄƒng phá»¥c há»“i tháº£m há»a tá»©c thÃ¬.',
+      title: 'Bảo mật & Ổn định dài hạn',
+      desc: 'Thiết kế kiến trúc chuẩn bảo mật quốc tế, dữ liệu sao lưu liên tục và khả năng phục hồi thảm họa tức thì.',
       icon: ShieldCheck,
     },
     {
-      title: 'Äá»“ng hÃ nh trá»n vÃ²ng Ä‘á»i sáº£n pháº©m',
-      desc: 'KhÃ´ng dá»«ng láº¡i á»Ÿ viá»‡c bÃ n giao pháº§n má»m, 2HT há»— trá»£ Ä‘Ã o táº¡o ngÆ°á»i dÃ¹ng vÃ  nÃ¢ng cáº¥p cÃ´ng nghá»‡ Ä‘á»‹nh ká»³.',
+      title: 'Đồng hành trọn vòng đời sản phẩm',
+      desc: 'Không dừng lại ở việc bàn giao phần mềm, 2HT hỗ trợ đào tạo người dùng và nâng cấp công nghệ định kỳ.',
       icon: Award,
     },
   ];
@@ -47,26 +44,26 @@ export const AboutPage: React.FC = () => {
       {/* Breadcrumb */}
       <div className="flex items-center gap-2 text-xs text-slate-500">
         <Link to="/" className="hover:text-primary transition-colors">
-          Trang chá»§
+          Trang chủ
         </Link>
         <ChevronRight className="w-3.5 h-3.5 text-slate-500" />
-        <span className="text-slate-900 font-medium">Giá»›i thiá»‡u 2HT</span>
+        <span className="text-slate-900 font-medium">Giới thiệu 2HT</span>
       </div>
 
       {/* Hero About */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
         <div className="lg:col-span-7 space-y-6">
           <span className="text-xs font-bold text-primary uppercase tracking-wider bg-primary/10 px-3 py-1 rounded-full border border-primary/20">
-            Vá» chÃºng tÃ´i
+            Về chúng tôi
           </span>
           <h1 className="text-4xl sm:text-5xl font-black text-slate-900 leading-tight">
             2HT Information Technology
           </h1>
           <p className="text-lg text-primary font-semibold">
-            â€œ{settings.slogan}â€
+            “{settings.slogan}”
           </p>
           <p className="text-slate-600 text-base leading-relaxed">
-            ÄÆ°á»£c thÃ nh láº­p vá»›i sá»© má»‡nh tiÃªn phong kiáº¿n táº¡o cÃ¡c giáº£i phÃ¡p pháº§n má»m cháº¥t lÆ°á»£ng cao cho thá»‹ trÆ°á»ng Viá»‡t Nam vÃ  khu vá»±c, 2HT Information Technology táº­p trung nghiÃªn cá»©u cÃ¡c ná»n táº£ng SaaS hiá»‡n Ä‘áº¡i: Quáº£n trá»‹ cÆ° dÃ¢n sá»‘, ThÆ°Æ¡ng máº¡i Ä‘iá»‡n tá»­ Ä‘a kÃªnh, ERP doanh nghiá»‡p vÃ  Há»‡ thá»‘ng cháº¥m cÃ´ng nhÃ¢n sá»± thÃ´ng minh.
+            Được thành lập với sứ mệnh tiên phong kiến tạo các giải pháp phần mềm chất lượng cao cho thị trường Việt Nam và khu vực, 2HT Information Technology tập trung nghiên cứu các nền tảng SaaS hiện đại: Quản trị cư dân số, Thương mại điện tử đa kênh, ERP doanh nghiệp và Hệ thống chấm công nhân sự thông minh.
           </p>
           <div className="pt-2">
             <Button
@@ -76,23 +73,23 @@ export const AboutPage: React.FC = () => {
               icon={<ArrowRight className="w-4 h-4" />}
               iconPosition="right"
             >
-              LiÃªn há»‡ há»£p tÃ¡c cÃ¹ng 2HT
+              Liên hệ hợp tác cùng 2HT
             </Button>
           </div>
         </div>
 
         <div className="lg:col-span-5 rounded-3xl bg-white border border-slate-200/80 p-8 space-y-6 shadow-xl relative glow-border">
           <h3 className="text-xl font-bold text-slate-900 border-b border-slate-100 pb-4">
-            Táº§m nhÃ¬n & Sá»© má»‡nh cá»‘t lÃµi
+            Tầm nhìn & Sứ mệnh cốt lõi
           </h3>
           <div className="space-y-4 text-xs text-slate-600 leading-relaxed">
             <p>
-              <strong className="text-primary block mb-1 font-bold">Táº§m nhÃ¬n:</strong>
-              Trá»Ÿ thÃ nh Ä‘Æ¡n vá»‹ cÃ´ng nghá»‡ hÃ ng Ä‘áº§u vá» phÃ¡t triá»ƒn giáº£i phÃ¡p pháº§n má»m doanh nghiá»‡p tá»± chá»§ táº¡i Viá»‡t Nam, mang Ä‘áº¿n tráº£i nghiá»‡m pháº§n má»m chuáº©n quá»‘c táº¿.
+              <strong className="text-primary block mb-1 font-bold">Tầm nhìn:</strong>
+              Trở thành đơn vị công nghệ hàng đầu về phát triển giải pháp phần mềm doanh nghiệp tự chủ tại Việt Nam, mang đến trải nghiệm phần mềm chuẩn quốc tế.
             </p>
             <p>
-              <strong className="text-accent block mb-1 font-bold">Sá»© má»‡nh:</strong>
-              GiÃºp 10,000+ doanh nghiá»‡p sá»‘ hÃ³a váº­n hÃ nh thÃ nh cÃ´ng, tiáº¿t kiá»‡m hÃ ng triá»‡u giá» lÃ m viá»‡c thá»§ cÃ´ng vÃ  bá»©t phÃ¡ doanh thu.
+              <strong className="text-accent block mb-1 font-bold">Sứ mệnh:</strong>
+              Giúp 10,000+ doanh nghiệp số hóa vận hành thành công, tiết kiệm hàng triệu giờ làm việc thủ công và bứt phá doanh thu.
             </p>
           </div>
         </div>
@@ -101,9 +98,9 @@ export const AboutPage: React.FC = () => {
       {/* Core Values */}
       <div className="space-y-10">
         <SectionHeading
-          eyebrow="GiÃ¡ trá»‹ cá»‘t lÃµi"
-          title="Nhá»¯ng nguyÃªn táº¯c Ä‘á»‹nh hÃ¬nh sáº£n pháº©m 2HT"
-          description="ChÃºng tÃ´i tin ráº±ng pháº§n má»m xuáº¥t sáº¯c pháº£i Ä‘Ã¡p á»©ng hÃ i hÃ²a giá»¯a tá»‘c Ä‘á»™, Ä‘á»™ á»•n Ä‘á»‹nh vÃ  tráº£i nghiá»‡m ngÆ°á»i dÃ¹ng."
+          eyebrow="Giá trị cốt lõi"
+          title="Những nguyên tắc định hình sản phẩm 2HT"
+          description="Chúng tôi tin rằng phần mềm xuất sắc phải đáp ứng hài hòa giữa tốc độ, độ ổn định và trải nghiệm người dùng."
         />
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
