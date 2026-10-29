@@ -1,6 +1,5 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-const isometricLaptopImg = '/isometric-laptop-transparent.png';
 
 export const EcosystemHeroVisual: React.FC = () => {
   return (
@@ -15,17 +14,20 @@ export const EcosystemHeroVisual: React.FC = () => {
         transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut' }}
         className="relative flex items-center justify-center w-full transform-gpu will-change-transform"
       >
-        <img
-          src={isometricLaptopImg}
-          alt="2HT Technology Platform Dashboard Ecosystem"
-          width={1400}
-          height={1045}
-          loading="eager"
-          decoding="async"
-          // @ts-expect-error fetchpriority is a modern HTML attribute
-          fetchpriority="high"
-          className="w-full max-w-[540px] sm:max-w-[620px] lg:max-w-[700px] xl:max-w-[780px] h-auto object-contain drop-shadow-[0_30px_60px_rgba(15,23,42,0.18)] transition-transform duration-500 hover:scale-[1.02]"
-        />
+        <picture className="w-full flex justify-center">
+          <source srcSet="/isometric-laptop-hero.webp" type="image/webp" />
+          <img
+            src="/isometric-laptop-transparent.png"
+            alt="2HT Technology Platform Dashboard Ecosystem"
+            width={1400}
+            height={1045}
+            loading="eager"
+            decoding="async"
+            // @ts-expect-error fetchpriority is a modern HTML attribute
+            fetchpriority="high"
+            className="w-full max-w-[540px] sm:max-w-[620px] lg:max-w-[700px] xl:max-w-[780px] h-auto object-contain drop-shadow-[0_30px_60px_rgba(15,23,42,0.18)] transition-transform duration-500 hover:scale-[1.02]"
+          />
+        </picture>
       </motion.div>
     </div>
   );
