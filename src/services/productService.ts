@@ -3,22 +3,34 @@ import { initialProducts } from '../data/initialProducts';
 import { storage, STORAGE_KEYS } from './storage';
 import { apiClient } from './apiClient';
 
+let inFlightProductFetch: Promise<Product[]> | null = null;
+
 export const productService = {
   getAll(): Product[] {
     return storage.get<Product[]>(STORAGE_KEYS.PRODUCTS, initialProducts);
   },
 
   async fetchAll(): Promise<Product[]> {
-    try {
-      const data = await apiClient.get<Product[]>('/products?all=true');
-      if (Array.isArray(data) && data.length > 0) {
-        storage.set(STORAGE_KEYS.PRODUCTS, data);
-        return data;
-      }
-    } catch (e) {
-      console.warn('Backend chưa sẵn sàng, dùng cache local');
+    if (inFlightProductFetch) {
+      return inFlightProductFetch;
     }
-    return this.getAll();
+
+    inFlightProductFetch = (async () => {
+      try {
+        const data = await apiClient.get<Product[]>('/products?all=true');
+        if (Array.isArray(data) && data.length > 0) {
+          storage.set(STORAGE_KEYS.PRODUCTS, data);
+          return data;
+        }
+      } catch (e) {
+        console.warn('Backend chưa sẵn sàng, dùng cache local');
+      } finally {
+        inFlightProductFetch = null;
+      }
+      return this.getAll();
+    })();
+
+    return inFlightProductFetch;
   },
 
   getPublished(): Product[] {

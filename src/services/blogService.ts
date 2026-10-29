@@ -3,22 +3,34 @@ import { initialBlogs } from '../data/initialBlogs';
 import { storage, STORAGE_KEYS } from './storage';
 import { apiClient } from './apiClient';
 
+let inFlightBlogFetch: Promise<BlogPost[]> | null = null;
+
 export const blogService = {
   getAll(): BlogPost[] {
     return storage.get<BlogPost[]>(STORAGE_KEYS.BLOGS, initialBlogs);
   },
 
   async fetchAll(): Promise<BlogPost[]> {
-    try {
-      const data = await apiClient.get<BlogPost[]>('/blogs');
-      if (Array.isArray(data) && data.length > 0) {
-        storage.set(STORAGE_KEYS.BLOGS, data);
-        return data;
-      }
-    } catch (e) {
-      console.warn('Backend chưa sẵn sàng, dùng cache local');
+    if (inFlightBlogFetch) {
+      return inFlightBlogFetch;
     }
-    return this.getAll();
+
+    inFlightBlogFetch = (async () => {
+      try {
+        const data = await apiClient.get<BlogPost[]>('/blogs');
+        if (Array.isArray(data) && data.length > 0) {
+          storage.set(STORAGE_KEYS.BLOGS, data);
+          return data;
+        }
+      } catch (e) {
+        console.warn('Backend chưa sẵn sàng, dùng cache local');
+      } finally {
+        inFlightBlogFetch = null;
+      }
+      return this.getAll();
+    })();
+
+    return inFlightBlogFetch;
   },
 
   getBySlug(slug: string): BlogPost | undefined {

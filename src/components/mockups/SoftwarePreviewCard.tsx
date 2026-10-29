@@ -46,7 +46,7 @@ const softwareMeta: Record<
     fallbackImage:
       'https://images.unsplash.com/photo-1551836022-d5d88e9218df?auto=format&fit=crop&w=800&q=80',
     urlPath: 'app.2ht.vn/sales-pipeline',
-    tag: 'Sales & CRM 360Â°',
+    tag: 'Sales & CRM 360°',
     tagColor: 'text-amber-400 bg-amber-500/10 border-amber-500/30',
     accentGlow: 'from-amber-500/20 to-orange-500/10',
   },

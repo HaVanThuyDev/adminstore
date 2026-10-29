@@ -35,11 +35,16 @@ export const apiClient = {
       headers['Authorization'] = `Bearer ${token}`;
     }
 
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 4000);
+
     try {
       const response = await fetch(url, {
         ...options,
         headers,
+        signal: options.signal || controller.signal,
       });
+      clearTimeout(timeoutId);
 
       const json: ApiResponse<T> = await response.json();
 
@@ -49,6 +54,7 @@ export const apiClient = {
 
       return json.data;
     } catch (error: any) {
+      clearTimeout(timeoutId);
       console.warn(`[API Client Error] ${endpoint}:`, error.message);
       throw error;
     }

@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import isometricLaptopImg from '../../assets/isometric-laptop-transparent.png';
+const isometricLaptopImg = '/isometric-laptop-transparent.png';
 
 export const EcosystemHeroVisual: React.FC = () => {
   return (

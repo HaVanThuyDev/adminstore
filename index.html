@@ -6,10 +6,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Thiết kế Website - 2HT Information Technology</title>
     <meta name="description" content="Khám phá hệ sinh thái phần mềm do 2HT phát triển, giúp doanh nghiệp vận hành thông minh hơn, tối ưu quy trình và tăng tốc chuyển đổi số." />
-    <!-- Fonts -->
+    <!-- Fonts (Non-blocking async load with fallback) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" media="print" onload="this.media='all'">
+    <noscript>
+      <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap">
+    </noscript>
   </head>
   <body class="bg-white text-slate-800 antialiased selection:bg-cyan-500/20 selection:text-cyan-700 min-h-screen overflow-x-hidden font-sans">
     <div id="root"></div>
